@@ -1,16 +1,17 @@
 package com.example.dai_android_grupo_4;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.repository.ReservaServiceCallback;
 import com.example.dai_android_grupo_4.model.Reserva;
 import com.example.dai_android_grupo_4.services.ReservaService;
@@ -20,10 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class MainActivity extends AppCompatActivity {
+public class ReservasActivity extends AppCompatActivity {
+
 
     private static final String TAG = "ActivityLifecycle";
 
@@ -38,15 +41,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "⭐ onCreate: La Activity está siendo creada");
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_reservas);
 
-        // Configurar el botón de reservas
-        Button btnReservas = findViewById(R.id.btnReservas);
-        btnReservas.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
-            startActivity(intent);
+        listView = findViewById(R.id.listView);
+        reservaDisplayList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1,
+                reservaDisplayList);
+        listView.setAdapter(adapter);
+        loadReservas();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedReserva = reservaDisplayList.get(position);
+            String pokemonName = selectedReserva.split(" - ")[0];
+
+            //Intent intent = new Intent(MainActivity.this, PokemonDetailActivity.class);
+            //intent.putExtra(PokemonDetailActivity.EXTRA_POKEMON_NAME, pokemonName);
+            //startActivity(intent);
         });
-
     }
 
     @Override
@@ -83,6 +94,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "⭐ onDestroy: La Activity está siendo destruida");
+    }
+
+    private void loadReservas() {
+        reservaService.getAllReservas(new ReservaServiceCallback() {
+            @Override
+            public void onSuccess(List<Reserva> reservas) {
+                reservaDisplayList.clear();
+                reservaDisplayList.addAll(reservas.stream()
+                        .map(reserva -> reserva.getClase() + " (" + reserva.getHorario() + ") - " + reserva.getProfesor())
+                        .collect(Collectors.toList()));
+                runOnUiThread(() -> adapter.notifyDataSetChanged());
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                runOnUiThread(() -> Toast.makeText(ReservasActivity.this,
+                        "Error al cargar las reservas: " + error.getMessage(),
+                        Toast.LENGTH_LONG).show());
+            }
+        });
     }
 
     @Override
