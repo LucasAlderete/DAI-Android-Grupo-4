@@ -5,6 +5,7 @@ import com.example.dai_android_grupo_4.model.Sede;
 public class SedeResponse {
     private Long id;
     private String nombre;
+    private String direccion;
 
     // Getters y Setters
     public Long getId() {
@@ -23,10 +24,19 @@ public class SedeResponse {
         this.nombre = nombre;
     }
 
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
     public Sede toSede() {
         Sede sede = new Sede();
         sede.setId(this.id);
         sede.setNombre(this.nombre);
+        sede.setDireccion(this.direccion);
         return sede;
     }
 }

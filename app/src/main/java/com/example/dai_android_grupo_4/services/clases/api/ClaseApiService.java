@@ -1,10 +1,10 @@
 package com.example.dai_android_grupo_4.services.clases.api;
 
 import com.example.dai_android_grupo_4.data.api.model.clases.ClaseDetailResponse;
-import com.example.dai_android_grupo_4.model.Clase;
 import com.example.dai_android_grupo_4.model.PageResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ClaseApiService {
@@ -16,4 +16,7 @@ public interface ClaseApiService {
             @Query("disciplinaId") Long disciplinaId,
             @Query("fecha") String fecha
     );
+
+    @GET("clases/{id}")
+    Call<ClaseDetailResponse> getClaseById(@Path("id") Long claseId);
 }

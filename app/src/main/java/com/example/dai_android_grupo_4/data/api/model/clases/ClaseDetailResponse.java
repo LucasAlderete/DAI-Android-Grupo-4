@@ -13,6 +13,12 @@ public class ClaseDetailResponse {
     private String nombreInstructor;
     private SedeResponse sede;
 
+    @SerializedName("duracionMinutos")
+    private int duracionMinutos;
+
+    @SerializedName("cupoDisponible")
+    private int cupoDisponible;
+
     // Getters y Setters
 
     public Long getId() {
@@ -42,6 +48,10 @@ public class ClaseDetailResponse {
     public String getNombreInstructor() {
         return nombreInstructor;
     }
+
+    public int getDuracionMinutos() { return duracionMinutos; }
+
+    public int getCupoDisponible() { return cupoDisponible; }
 
     public void setNombreInstructor(String nombreInstructor) {
         this.nombreInstructor = nombreInstructor;

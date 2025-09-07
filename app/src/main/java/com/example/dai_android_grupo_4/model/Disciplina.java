@@ -4,6 +4,8 @@ public class Disciplina {
     private Long id;
     private String nombre;
 
+    public Disciplina() {}
+
     public Long getId() {
         return id;
     }
@@ -18,5 +20,23 @@ public class Disciplina {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Disciplina that = (Disciplina) o;
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

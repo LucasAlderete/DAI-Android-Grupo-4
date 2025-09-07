@@ -1,5 +1,9 @@
 package com.example.dai_android_grupo_4.data.api.repository.clases;
 
+import com.example.dai_android_grupo_4.model.Clase;
+
+import java.util.List;
+
 public interface ClaseRepository {
     void getAllClases(
             int page,
@@ -9,4 +13,6 @@ public interface ClaseRepository {
             String fecha,
             ClaseServiceCallBack callback
     );
+
+    void getClaseById(Long claseId, ClaseDetailCallback callback);
 }

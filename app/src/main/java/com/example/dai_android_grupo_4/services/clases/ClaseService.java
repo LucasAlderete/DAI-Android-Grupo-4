@@ -1,6 +1,7 @@
 package com.example.dai_android_grupo_4.services.clases;
 
 import com.example.dai_android_grupo_4.data.api.repository.clases.ClaseServiceCallBack;
+import com.example.dai_android_grupo_4.data.api.repository.clases.ClaseServiceCallBack;
 
 public interface ClaseService {
     void getAllClases(
@@ -11,4 +12,6 @@ public interface ClaseService {
             String fecha,
             ClaseServiceCallBack callback
     );
+
+    void getClaseById(Long claseId, ClaseDetailServiceCallback callback);
 }
