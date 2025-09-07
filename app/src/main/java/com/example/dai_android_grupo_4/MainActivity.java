@@ -6,18 +6,14 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.dai_android_grupo_4.data.api.ApiService;
-import com.example.dai_android_grupo_4.data.api.repository.ReservaServiceCallback;
-import com.example.dai_android_grupo_4.model.Reserva;
-import com.example.dai_android_grupo_4.services.ReservaService;
+import com.example.dai_android_grupo_4.activities.clases.ClasesActivity;
+import com.example.dai_android_grupo_4.activities.reservas.ReservasActivity;
+import com.example.dai_android_grupo_4.services.reservas.ReservaService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -44,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
         Button btnReservas = findViewById(R.id.btnReservas);
         btnReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
+            startActivity(intent);
+        });
+
+        Button btnClases = findViewById(R.id.btnClases);
+        btnClases.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ClasesActivity.class);
             startActivity(intent);
         });
 

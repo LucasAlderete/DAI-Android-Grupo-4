@@ -1,4 +1,4 @@
-package com.example.dai_android_grupo_4.data.api.model;
+package com.example.dai_android_grupo_4.data.api.model.reservas;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;

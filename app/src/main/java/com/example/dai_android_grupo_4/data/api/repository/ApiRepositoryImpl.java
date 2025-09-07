@@ -1,7 +1,7 @@
 package com.example.dai_android_grupo_4.data.api.repository;
 
 import com.example.dai_android_grupo_4.data.api.ApiService;
-import com.example.dai_android_grupo_4.data.api.model.ReservaDetailResponse;
+import com.example.dai_android_grupo_4.data.api.model.reservas.ReservaDetailResponse;
 import com.example.dai_android_grupo_4.model.Reserva;
 
 import java.util.ArrayList;

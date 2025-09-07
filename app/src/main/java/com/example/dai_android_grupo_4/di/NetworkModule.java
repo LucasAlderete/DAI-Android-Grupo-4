@@ -1,8 +1,8 @@
 package com.example.dai_android_grupo_4.di;
 
-
 import android.content.Context;
 import com.example.dai_android_grupo_4.data.api.ApiService;
+import com.example.dai_android_grupo_4.services.clases.api.ClaseApiService;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private final String API_URL = "http://192.168.0.48:8080/api/";
+    private final String API_URL = "http://10.0.2.2:8080/api/";
 
     @Provides
     @Singleton
@@ -63,5 +63,11 @@ public class NetworkModule {
     @Singleton
     ApiService provideApiService(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    ClaseApiService provideClaseApiService(Retrofit retrofit) {
+        return retrofit.create(ClaseApiService.class);
     }
 }
