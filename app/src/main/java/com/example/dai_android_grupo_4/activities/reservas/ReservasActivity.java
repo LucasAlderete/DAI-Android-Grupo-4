@@ -1,4 +1,4 @@
-package com.example.dai_android_grupo_4;
+package com.example.dai_android_grupo_4.activities.reservas;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,15 +6,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.data.api.repository.ReservaServiceCallback;
 import com.example.dai_android_grupo_4.model.Reserva;
-import com.example.dai_android_grupo_4.services.ReservaService;
+import com.example.dai_android_grupo_4.services.reservas.ReservaService;
 
 import java.util.ArrayList;
 import java.util.List;
