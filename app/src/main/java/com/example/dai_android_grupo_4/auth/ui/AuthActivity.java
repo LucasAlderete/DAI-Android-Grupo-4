@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.uade.exercises.R;
+import com.example.dai_android_grupo_4.R;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
