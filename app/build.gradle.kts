@@ -74,6 +74,7 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.recyclerview)
     kapt(libs.hilt.compiler)
     
     // Retrofit

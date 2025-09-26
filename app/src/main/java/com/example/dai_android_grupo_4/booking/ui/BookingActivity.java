@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
 import com.example.dai_android_grupo_4.booking.ui.fragments.CreateBookingFragment;
+import com.example.dai_android_grupo_4.booking.ui.fragments.BookingHistoryFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -48,8 +49,7 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         } else if (itemId == R.id.nav_create_booking) {
             selectedFragment = new CreateBookingFragment();
         } else if (itemId == R.id.nav_booking_history) {
-            // Aquí cargarías el fragment para historial
-            // selectedFragment = new BookingHistoryFragment();
+            selectedFragment = new BookingHistoryFragment();
         }
         
         if (selectedFragment != null) {

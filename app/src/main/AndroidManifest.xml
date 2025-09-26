@@ -25,6 +25,9 @@
             android:name=".booking.ui.BookingActivity"
             android:exported="false" />
         <activity
+            android:name=".historial.ui.HistorialActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
