@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import com.google.android.material.button.MaterialButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,14 +41,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Configurar el botón de reservas (versión antigua)
-        Button btnReservas = findViewById(R.id.btnReservas);
+        MaterialButton btnReservas = findViewById(R.id.btnReservas);
         btnReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
             startActivity(intent);
         });
 
         // Configurar el botón de reservas (nueva versión con fragments)
-        Button btnNewReservas = findViewById(R.id.btnNewReservas);
+        MaterialButton btnNewReservas = findViewById(R.id.btnNewReservas);
         if (btnNewReservas != null) {
             btnNewReservas.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);

@@ -25,12 +25,11 @@
         android:textColor="@android:color/darker_gray"
         android:gravity="center" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Volver al Login"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:textColor="@android:color/white" />
+        style="@style/Widget.Material3.Button" />
 
 </LinearLayout>

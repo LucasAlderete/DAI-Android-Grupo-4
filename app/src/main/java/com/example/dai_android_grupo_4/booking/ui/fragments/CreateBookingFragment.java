@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import com.google.android.material.button.MaterialButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +29,7 @@ public class CreateBookingFragment extends Fragment {
 
     private Spinner spinnerClass, spinnerInstructor, spinnerDate, spinnerTime;
     private TextView tvSelectedClass, tvSelectedInstructor, tvSelectedDate, tvSelectedTime;
-    private Button btnCreateBooking;
+    private MaterialButton btnCreateBooking;
     private BookingViewModel viewModel;
 
     @Override

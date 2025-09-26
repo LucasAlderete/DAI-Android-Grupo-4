@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class BookingListFragment extends Fragment implements BookingAdapter.OnBookingClickListener {
 
     private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    private CircularProgressIndicator progressBar;
     private BookingAdapter adapter;
     private BookingViewModel viewModel;
     private List<Booking> bookings = new ArrayList<>();

@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,8 +26,8 @@ public class LoginFragment extends Fragment {
     @Inject
     TokenRepository tokenRepository;
     
-    private EditText userEditText;
-    private EditText passwordEditText;
+    private TextInputEditText userEditText;
+    private TextInputEditText passwordEditText;
     
     @Nullable
     @Override
@@ -41,8 +41,8 @@ public class LoginFragment extends Fragment {
 
         userEditText = view.findViewById(R.id.userEditText);
         passwordEditText = view.findViewById(R.id.passwordEditText);
-        Button loginButton = view.findViewById(R.id.loginButton);
-        Button registerButton = view.findViewById(R.id.registerButton);
+        MaterialButton loginButton = view.findViewById(R.id.loginButton);
+        MaterialButton registerButton = view.findViewById(R.id.registerButton);
 
         loginButton.setOnClickListener(v -> {
             String exampleToken = "jwt_token_example_" + System.currentTimeMillis();
