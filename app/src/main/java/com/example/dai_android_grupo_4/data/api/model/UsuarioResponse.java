@@ -32,7 +32,6 @@ public class UsuarioResponse {
     @SerializedName("ultimoAcceso")
     private String ultimoAcceso;
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

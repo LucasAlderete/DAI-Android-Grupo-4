@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.dai_android_grupo_4.ReservasActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -17,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.dai_android_grupo_4.R;
+import com.example.dai_android_grupo_4.MainActivity;
 import com.example.dai_android_grupo_4.data.api.model.AuthResponse;
 import com.example.dai_android_grupo_4.data.api.model.VerifyOtpRequest;
 import com.example.dai_android_grupo_4.data.api.model.OtpRequest;
@@ -38,7 +38,6 @@ public class VerifyCodeFragment extends Fragment {
     private Button resendButton;
 
     private String email;
-    private String password;
 
     @Nullable
     @Override
@@ -56,7 +55,6 @@ public class VerifyCodeFragment extends Fragment {
 
         if (getArguments() != null) {
             email = getArguments().getString("email");
-            password = getArguments().getString("password");
         }
 
         verifyButton.setOnClickListener(v -> {
@@ -72,6 +70,10 @@ public class VerifyCodeFragment extends Fragment {
                 @Override
                 public void onSuccess(AuthResponse response) {
                     Toast.makeText(getContext(), "Código verificado correctamente", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                    requireActivity().finish();
                 }
 
                 @Override
@@ -82,21 +84,12 @@ public class VerifyCodeFragment extends Fragment {
         });
 
         resendButton.setOnClickListener(v -> {
-            if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-                Toast.makeText(getContext(), "Falta email o contraseña para reenviar", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            OtpRequest request = new OtpRequest(email, "1");
 
-            OtpRequest request = new OtpRequest(email, password);
             apiRepository.resendOtp(request, new AuthCallback() {
                 @Override
                 public void onSuccess(AuthResponse response) {
-                    Toast.makeText(getContext(), "Código verificado correctamente", Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(getActivity(), com.example.dai_android_grupo_4.MainActivity.class);
-                    startActivity(intent);
-                    requireActivity().finish();
-
+                    Toast.makeText(getContext(), "Código reenviado a tu correo", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

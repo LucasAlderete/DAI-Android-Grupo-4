@@ -10,5 +10,4 @@ public class RegisterRequest {
         this.nombre = nombre;
         this.password = password;
     }
-    // getters y setters
 }

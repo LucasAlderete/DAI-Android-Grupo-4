@@ -13,7 +13,6 @@ public class UsuarioRequest {
         this.fotoUrl = fotoUrl;
     }
 
-    // Getters y Setters
     public String getNombre() {
         return nombre;
     }

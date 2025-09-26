@@ -12,27 +12,27 @@ import retrofit2.http.PUT;
 
 public interface ApiService {
 
-    // ================= RESERVAS =================
+    // RESERVAS
     @GET("reservas")
     Call<List<ReservaDetailResponse>> getReservasList();
 
-    // ================= AUTH =================
-    @POST("auth/login")  // POST /api/auth/login
+    // AUTH
+    @POST("auth/login")
     Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
-    @POST("auth/register")  // POST /api/auth/register
+    @POST("auth/register")
     Call<AuthResponse> register(@Body RegisterRequest registerRequest);
 
-    @POST("auth/verificar-codigo")  // POST /api/auth/verificar-codigo
+    @POST("auth/verificar-codigo")
     Call<AuthResponse> verifyOtp(@Body VerifyOtpRequest verifyOtpRequest);
 
-    @POST("auth/reenviar-codigo")  // POST /api/auth/reenviar-codigo
+    @POST("auth/reenviar-codigo")
     Call<AuthResponse> resendOtp(@Body OtpRequest otpRequest);
 
-    // ================= USUARIO =================
-    @GET("usuario/perfil")  // GET /api/usuario/perfil
+    // USUARIO
+    @GET("usuario/perfil")
     Call<UsuarioResponse> getPerfil();
 
-    @PUT("usuario/perfil")  // PUT /api/usuario/perfil
+    @PUT("usuario/perfil")
     Call<UsuarioResponse> updatePerfil(@Body UsuarioRequest usuarioRequest);
 }
