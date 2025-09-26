@@ -3,21 +3,17 @@ package com.example.dai_android_grupo_4;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import com.google.android.material.button.MaterialButton;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.dai_android_grupo_4.data.api.ApiService;
-import com.example.dai_android_grupo_4.data.api.repository.ReservaServiceCallback;
-import com.example.dai_android_grupo_4.model.Reserva;
+import com.example.dai_android_grupo_4.auth.ui.AuthActivity;
+import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import com.example.dai_android_grupo_4.services.ReservaService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -30,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     ReservaService reservaService;
 
+    @Inject
+    TokenRepository tokenRepository;
+
     private ListView listView;
     private List<String> reservaDisplayList;
     private ArrayAdapter<String> adapter;
@@ -40,14 +39,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "⭐ onCreate: La Activity está siendo creada");
         setContentView(R.layout.activity_main);
 
-        // Configurar el botón de reservas (versión antigua)
         MaterialButton btnReservas = findViewById(R.id.btnReservas);
         btnReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
             startActivity(intent);
         });
 
-        // Configurar el botón de reservas (nueva versión con fragments)
         MaterialButton btnNewReservas = findViewById(R.id.btnNewReservas);
         if (btnNewReservas != null) {
             btnNewReservas.setOnClickListener(v -> {
@@ -56,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        MaterialButton btnLogout = findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(v -> {
+            tokenRepository.clearToken();
+            Intent intent = new Intent(MainActivity.this, AuthActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
     @Override

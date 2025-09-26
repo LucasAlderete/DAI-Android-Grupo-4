@@ -22,4 +22,14 @@
         android:text="Reservas (Nueva Versión)"
         android:padding="16dp"
         style="@style/Widget.Material3.Button" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cerrar sesión"
+        android:padding="16dp"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_marginTop="24dp"/>
+
 </LinearLayout>

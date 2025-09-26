@@ -1,14 +1,38 @@
 package com.example.dai_android_grupo_4.data.api;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
+import com.example.dai_android_grupo_4.data.api.model.*;
 
-import com.example.dai_android_grupo_4.data.api.model.ReservaDetailResponse;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+
 public interface ApiService {
+
+    // ================= RESERVAS =================
     @GET("reservas")
     Call<List<ReservaDetailResponse>> getReservasList();
 
+    // ================= AUTH =================
+    @POST("auth/login")  // POST /api/auth/login
+    Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
+    @POST("auth/register")  // POST /api/auth/register
+    Call<AuthResponse> register(@Body RegisterRequest registerRequest);
+
+    @POST("auth/verificar-codigo")  // POST /api/auth/verificar-codigo
+    Call<AuthResponse> verifyOtp(@Body VerifyOtpRequest verifyOtpRequest);
+
+    @POST("auth/reenviar-codigo")  // POST /api/auth/reenviar-codigo
+    Call<AuthResponse> resendOtp(@Body OtpRequest otpRequest);
+
+    // ================= USUARIO =================
+    @GET("usuario/perfil")  // GET /api/usuario/perfil
+    Call<UsuarioResponse> getPerfil();
+
+    @PUT("usuario/perfil")  // PUT /api/usuario/perfil
+    Call<UsuarioResponse> updatePerfil(@Body UsuarioRequest usuarioRequest);
 }
