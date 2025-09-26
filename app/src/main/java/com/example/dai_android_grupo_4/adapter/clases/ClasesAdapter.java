@@ -54,7 +54,10 @@ public class ClasesAdapter extends RecyclerView.Adapter<ClasesAdapter.ClaseViewH
     }
 
     private String formatFechaHora(String fechaHoraStr) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        if (fechaHoraStr == null || fechaHoraStr.isEmpty()) {
+            return "Fecha no disponible";
+        }
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
         SimpleDateFormat outputFormat = new SimpleDateFormat("E d 'de' MMMM HH:mm'hs'", new Locale("es", "ES"));
 
         try {
