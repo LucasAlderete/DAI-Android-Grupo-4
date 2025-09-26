@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import com.google.android.material.button.MaterialButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,12 +40,21 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "⭐ onCreate: La Activity está siendo creada");
         setContentView(R.layout.activity_main);
 
-        // Configurar el botón de reservas
-        Button btnReservas = findViewById(R.id.btnReservas);
+        // Configurar el botón de reservas (versión antigua)
+        MaterialButton btnReservas = findViewById(R.id.btnReservas);
         btnReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
             startActivity(intent);
         });
+
+        // Configurar el botón de reservas (nueva versión con fragments)
+        MaterialButton btnNewReservas = findViewById(R.id.btnNewReservas);
+        if (btnNewReservas != null) {
+            btnNewReservas.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);
+                startActivity(intent);
+            });
+        }
 
     }
 

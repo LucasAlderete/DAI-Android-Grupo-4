@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinKapt)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.navigation.safeargs)
 }
 
 android {
@@ -29,11 +30,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
+    }
+    
+    // Habilitar Navigation Safe Args
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
     }
     
     // Configuración para mejorar la estabilidad de Kapt
@@ -41,8 +48,8 @@ android {
         correctErrorTypes = true
         useBuildCache = true
         javacOptions {
-            option("-source", "8")
-            option("-target", "8")
+            option("-source", "17")
+            option("-target", "17")
             option("-Xmaxerrs", 500)
             option("--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED")
             option("--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED")
@@ -74,6 +81,16 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.gson)
     implementation(libs.okhttp.logging)
+
+    // Navigation Component
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+
+    // Security Crypto para EncryptedSharedPreferences
+    implementation(libs.security.crypto)
+
+    // Biometric
+    implementation(libs.biometric)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
