@@ -40,12 +40,21 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "⭐ onCreate: La Activity está siendo creada");
         setContentView(R.layout.activity_main);
 
-        // Configurar el botón de reservas
+        // Configurar el botón de reservas (versión antigua)
         Button btnReservas = findViewById(R.id.btnReservas);
         btnReservas.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
             startActivity(intent);
         });
+
+        // Configurar el botón de reservas (nueva versión con fragments)
+        Button btnNewReservas = findViewById(R.id.btnNewReservas);
+        if (btnNewReservas != null) {
+            btnNewReservas.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);
+                startActivity(intent);
+            });
+        }
 
     }
 

@@ -10,6 +10,16 @@
         android:id="@+id/btnReservas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reservas"
-        android:padding="16dp"/>
+        android:text="Reservas (Versión Antigua)"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnNewReservas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reservas (Nueva Versión)"
+        android:padding="16dp"
+        android:background="@color/primary_color"
+        android:textColor="@color/white"/>
 </LinearLayout>

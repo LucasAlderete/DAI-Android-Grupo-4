@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Colores principales -->
+    <color name="primary_color">#FF2196F3</color>
+    <color name="primary_dark">#FF1976D2</color>
+    <color name="accent_color">#FFFF9800</color>
+    
+    <!-- Colores de estado de reservas -->
+    <color name="status_confirmed">#FF4CAF50</color>
+    <color name="status_canceled">#FFF44336</color>
+    <color name="status_completed">#FF2196F3</color>
+    <color name="status_expired">#FF9E9E9E</color>
+    <color name="status_default">#FF757575</color>
+    
+    <!-- Colores adicionales -->
+    <color name="error_color">#FFF44336</color>
+    <color name="divider_color">#FFE0E0E0</color>
+    <color name="background_color">#FFF5F5F5</color>
 </resources>
