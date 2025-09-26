@@ -7,6 +7,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
@@ -30,9 +31,11 @@ public interface ApiService {
     Call<AuthResponse> resendOtp(@Body OtpRequest otpRequest);
 
     // ================= USUARIO =================
-    @GET("usuario/perfil")  // GET /api/usuario/perfil
-    Call<UsuarioResponse> getPerfil();
+    @GET("usuario/perfil")
+    Call<UsuarioResponse> getPerfil(@Header("Authorization") String token);
 
-    @PUT("usuario/perfil")  // PUT /api/usuario/perfil
-    Call<UsuarioResponse> updatePerfil(@Body UsuarioRequest usuarioRequest);
+    @PUT("usuario/perfil")
+    Call<UsuarioResponse> updatePerfil(@Header("Authorization") String token,
+                                       @Body UsuarioRequest usuarioRequest);
+
 }

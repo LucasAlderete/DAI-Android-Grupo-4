@@ -6,11 +6,20 @@ public class UsuarioRequest {
     private String password;
     private String fotoUrl;
 
+    // Constructor completo
     public UsuarioRequest(String nombre, String email, String password, String fotoUrl) {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
         this.fotoUrl = fotoUrl;
+    }
+
+    // Constructor simplificado
+    public UsuarioRequest(String nombre, String email) {
+        this.nombre = nombre;
+        this.email = email;
+        this.password = null;
+        this.fotoUrl = null;
     }
 
     // Getters y Setters
