@@ -22,10 +22,8 @@ public class AuthResponse {
     @SerializedName("mensaje")
     private String mensaje;
 
-    // Constructor vacío
     public AuthResponse() {}
 
-    // Getters y Setters
     public String getToken() {
         return token;
     }

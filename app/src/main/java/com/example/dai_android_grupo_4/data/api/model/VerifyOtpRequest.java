@@ -8,5 +8,4 @@ public class VerifyOtpRequest {
         this.email = email;
         this.codigo = codigo;
     }
-    // getters y setters
 }

@@ -4,6 +4,7 @@
     android:id="@+id/auth_nav_graph"
     app:startDestination="@id/loginFragment">
 
+    <!-- Login Fragment -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.dai_android_grupo_4.auth.ui.LoginFragment"
@@ -12,8 +13,13 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+
+        <action
+            android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
 
+    <!-- Register Fragment -->
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.dai_android_grupo_4.auth.ui.RegisterFragment"
@@ -28,8 +34,25 @@
             app:destination="@id/verifyCodeFragment" />
     </fragment>
 
+    <!-- Verify Code Fragment -->
     <fragment
         android:id="@+id/verifyCodeFragment"
         android:name="com.example.dai_android_grupo_4.auth.ui.VerifyCodeFragment"
         android:label="VerifyCodeFragment" />
+
+    <!-- Forgot Password Fragment -->
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.dai_android_grupo_4.auth.ui.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment">
+
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_verifyCodeFragment"
+            app:destination="@id/verifyCodeFragment" />
+    </fragment>
+
 </navigation>
