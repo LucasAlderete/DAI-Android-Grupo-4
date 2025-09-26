@@ -24,6 +24,15 @@
         style="@style/Widget.Material3.Button" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Profile"
+        android:padding="16dp"
+        style="@style/Widget.Material3.Button"
+        android:layout_marginTop="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

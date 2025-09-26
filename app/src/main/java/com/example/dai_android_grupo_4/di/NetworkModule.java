@@ -21,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private final String API_URL = "http://192.168.0.93:8080/api/";
+    //private final String API_URL = "http://192.168.0.93:8080/api/";
+    public final String API_URL = "http://10.0.2.2:8080/api/";
 
     @Provides
     @Singleton

@@ -3,6 +3,7 @@ package com.example.dai_android_grupo_4.profile.repository;
 import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.model.UsuarioRequest;
 import com.example.dai_android_grupo_4.data.api.model.UsuarioResponse;
+import com.example.dai_android_grupo_4.data.api.model.UsuarioUpdateRequest;
 import com.example.dai_android_grupo_4.profile.model.Usuario;
 
 import javax.inject.Inject;
@@ -45,7 +46,11 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
     @Override
     public void updatePerfil(String token, Usuario usuario, ProfileCallback callback) {
-        UsuarioRequest request = new UsuarioRequest(usuario.getNombre(), usuario.getEmail());
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest();
+        request.setNombre(usuario.getNombre());
+        request.setEmail(usuario.getEmail());
+        request.setFotoUrl(usuario.getFotoUrl());
+
         apiService.updatePerfil("Bearer " + token, request)
                 .enqueue(new Callback<UsuarioResponse>() {
                     @Override

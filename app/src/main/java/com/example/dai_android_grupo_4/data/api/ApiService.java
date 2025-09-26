@@ -36,6 +36,6 @@ public interface ApiService {
 
     @PUT("usuario/perfil")
     Call<UsuarioResponse> updatePerfil(@Header("Authorization") String token,
-                                       @Body UsuarioRequest usuarioRequest);
+                                       @Body UsuarioUpdateRequest usuarioRequest);
 
 }

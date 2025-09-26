@@ -13,6 +13,8 @@ import com.example.dai_android_grupo_4.auth.ui.AuthActivity;
 import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import com.example.dai_android_grupo_4.services.ReservaService;
 
+import com.example.dai_android_grupo_4.profile.ui.ProfileActivity;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -52,6 +54,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
+
+        MaterialButton btnProfile = findViewById(R.id.btnProfile);
+        btnProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+
 
         MaterialButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
