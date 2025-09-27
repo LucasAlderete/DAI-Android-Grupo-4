@@ -30,6 +30,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".profile.ui.ProfileActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".auth.ui.AuthActivity"
             android:exported="true">
             <intent-filter>
