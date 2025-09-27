@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
-import com.example.dai_android_grupo_4.booking.ui.fragments.CreateBookingFragment;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingHistoryFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -46,8 +45,6 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         int itemId = item.getItemId();
         if (itemId == R.id.nav_my_bookings) {
             selectedFragment = new BookingListFragment();
-        } else if (itemId == R.id.nav_create_booking) {
-            selectedFragment = new CreateBookingFragment();
         } else if (itemId == R.id.nav_booking_history) {
             selectedFragment = new BookingHistoryFragment();
         }
