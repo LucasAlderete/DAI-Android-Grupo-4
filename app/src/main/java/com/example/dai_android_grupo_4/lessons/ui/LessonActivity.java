@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.ui.BookingActivity;
+import com.example.dai_android_grupo_4.profile.ui.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -45,7 +46,8 @@ public class LessonActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                // TODO: Implementar navegación a Mi Perfil más tarde
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
                 return true;
             }
             return false;
