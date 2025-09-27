@@ -32,8 +32,8 @@ import java.io.IOException;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private final String API_URL = "http://10.0.2.2:8080/api/";
-    //private final String API_URL = "http://192.168.0.31:8080/api/";
+    //private final String API_URL = "http://10.0.2.2:8080/api/";
+    private final String API_URL = "http://192.168.0.31:8080/api/";
 
     @Provides
     @Singleton

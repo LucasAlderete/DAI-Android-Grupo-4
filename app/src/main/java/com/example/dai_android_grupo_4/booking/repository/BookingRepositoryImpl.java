@@ -4,6 +4,7 @@ import com.example.dai_android_grupo_4.booking.model.Booking;
 import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.model.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,14 +16,18 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class BookingRepositoryImpl implements BookingRepository {
 
     private final ApiService apiService;
+    private final Gson gson;
 
     @Inject
-    public BookingRepositoryImpl(ApiService apiService) {
+    public BookingRepositoryImpl(ApiService apiService, Gson gson) {
         this.apiService = apiService;
+        this.gson = gson;
     }
 
     @Override
@@ -84,7 +89,8 @@ public class BookingRepositoryImpl implements BookingRepository {
                         // Recargar la lista de reservas después de cancelar
                         getUserBookings(callback);
                     } else {
-                        callback.onError("Error al cancelar reserva: " + response.code());
+                        String errorMessage = extractErrorMessage(response);
+                        callback.onError(errorMessage);
                     }
                 }
 
@@ -117,7 +123,8 @@ public class BookingRepositoryImpl implements BookingRepository {
                     // Recargar la lista de reservas después de crear
                     getUserBookings(callback);
                 } else {
-                    callback.onError("Error al crear reserva: " + response.code());
+                    String errorMessage = extractErrorMessage(response);
+                    callback.onError(errorMessage);
                 }
             }
 
@@ -189,5 +196,23 @@ public class BookingRepositoryImpl implements BookingRepository {
         }
         
         return bookings;
+    }
+
+    /**
+     * Extrae el mensaje de error específico del cuerpo de la respuesta HTTP
+     */
+    private String extractErrorMessage(Response<?> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                ErrorResponse errorResponse = gson.fromJson(errorBody, ErrorResponse.class);
+                return errorResponse.getSpecificErrorMessage();
+            }
+        } catch (IOException | JsonSyntaxException e) {
+            // Si no se puede parsear el error, usar el código de estado
+        }
+        
+        // Fallback al código de error si no se puede extraer el mensaje
+        return "Error al crear reserva: " + response.code();
     }
 }

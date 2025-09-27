@@ -28,6 +28,12 @@ public class BookingViewModel extends ViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> getError() { return _error; }
 
+    private final MutableLiveData<Boolean> _bookingCreated = new MutableLiveData<>();
+    public LiveData<Boolean> getBookingCreated() { return _bookingCreated; }
+
+    private final MutableLiveData<Boolean> _bookingCanceled = new MutableLiveData<>();
+    public LiveData<Boolean> getBookingCanceled() { return _bookingCanceled; }
+
     @Inject
     public BookingViewModel(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
@@ -55,10 +61,13 @@ public class BookingViewModel extends ViewModel {
 
     public void cancelBooking(String bookingId) {
         _loading.setValue(true);
+        _error.setValue(null);
+        _bookingCanceled.setValue(false);
         
         bookingRepository.cancelBooking(bookingId, new BookingRepository.BookingCallback() {
             @Override
             public void onSuccess(List<Booking> bookings) {
+                _bookingCanceled.setValue(true);
                 // Recargar la lista después de cancelar
                 loadUserBookings();
             }
@@ -67,6 +76,7 @@ public class BookingViewModel extends ViewModel {
             public void onError(String error) {
                 _error.setValue(error);
                 _loading.setValue(false);
+                _bookingCanceled.setValue(false);
             }
         });
     }
@@ -96,10 +106,12 @@ public class BookingViewModel extends ViewModel {
     public void createBooking(Booking booking) {
         _loading.setValue(true);
         _error.setValue(null);
+        _bookingCreated.setValue(false);
         
         bookingRepository.createBooking(booking, new BookingRepository.BookingCallback() {
             @Override
             public void onSuccess(List<Booking> bookings) {
+                _bookingCreated.setValue(true);
                 // Recargar la lista después de crear la reserva
                 loadUserBookings();
             }
@@ -108,6 +120,7 @@ public class BookingViewModel extends ViewModel {
             public void onError(String error) {
                 _error.setValue(error);
                 _loading.setValue(false);
+                _bookingCreated.setValue(false);
             }
         });
     }

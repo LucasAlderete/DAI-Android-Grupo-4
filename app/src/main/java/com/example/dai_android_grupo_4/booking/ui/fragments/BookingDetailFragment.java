@@ -1,5 +1,6 @@
 package com.example.dai_android_grupo_4.booking.ui.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.model.Booking;
+import com.example.dai_android_grupo_4.booking.ui.viewmodel.BookingViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -25,6 +28,7 @@ public class BookingDetailFragment extends Fragment {
     private Booking booking;
     private TextView tvClassName, tvInstructor, tvDate, tvTime, tvLocation, tvStatus;
     private Button btnCancel, btnGetDirections;
+    private BookingViewModel viewModel;
 
     public static BookingDetailFragment newInstance(Booking booking) {
         BookingDetailFragment fragment = new BookingDetailFragment();
@@ -53,8 +57,10 @@ public class BookingDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         initViews(view);
+        setupViewModel();
         setupClickListeners();
         populateData();
+        observeViewModel();
     }
 
     private void initViews(View view) {
@@ -68,10 +74,38 @@ public class BookingDetailFragment extends Fragment {
         btnGetDirections = view.findViewById(R.id.btn_get_directions);
     }
 
+    private void setupViewModel() {
+        if (getActivity() != null) {
+            viewModel = new ViewModelProvider(getActivity()).get(BookingViewModel.class);
+        }
+    }
+
+    private void observeViewModel() {
+        if (viewModel != null) {
+            // Observar errores del ViewModel
+            viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+                if (error != null) {
+                    Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Observar cuando se cancela exitosamente una reserva
+            viewModel.getBookingCanceled().observe(getViewLifecycleOwner(), bookingCanceled -> {
+                if (bookingCanceled != null && bookingCanceled) {
+                    Toast.makeText(getContext(), "Reserva cancelada exitosamente", Toast.LENGTH_SHORT).show();
+                    
+                    // Navegar de vuelta a la lista de reservas
+                    if (getActivity() != null) {
+                        getActivity().onBackPressed();
+                    }
+                }
+            });
+        }
+    }
+
     private void setupClickListeners() {
         btnCancel.setOnClickListener(v -> {
-            // Implementar cancelación de reserva
-            Toast.makeText(getContext(), "Funcionalidad de cancelación en desarrollo", Toast.LENGTH_SHORT).show();
+            showCancelConfirmationDialog();
         });
 
         btnGetDirections.setOnClickListener(v -> {
@@ -94,5 +128,20 @@ public class BookingDetailFragment extends Fragment {
                 btnCancel.setVisibility(View.GONE);
             }
         }
+    }
+
+    private void showCancelConfirmationDialog() {
+        if (getContext() == null) return;
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Cancelar Reserva")
+                .setMessage("¿Estás seguro de que quieres cancelar esta reserva? Esta acción no se puede deshacer.")
+                .setPositiveButton("Cancelar Reserva", (dialog, which) -> {
+                    if (viewModel != null && booking != null) {
+                        viewModel.cancelBooking(booking.getId());
+                    }
+                })
+                .setNegativeButton("Mantener Reserva", null)
+                .show();
     }
 }

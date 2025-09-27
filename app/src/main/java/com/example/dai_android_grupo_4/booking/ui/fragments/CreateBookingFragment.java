@@ -48,6 +48,9 @@ public class CreateBookingFragment extends Fragment {
     
     // Selecciones actuales
     private ClaseDto claseSeleccionada;
+    private String instructorSeleccionado;
+    private String fechaSeleccionada;
+    private String horarioSeleccionado;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -81,7 +84,32 @@ public class CreateBookingFragment extends Fragment {
 
     private void initViewModel() {
         if (getActivity() != null) {
+            // Usar el ViewModel de la Activity para compartir el estado entre fragmentos
             viewModel = new ViewModelProvider(getActivity()).get(BookingViewModel.class);
+            observeViewModel();
+        }
+    }
+
+    private void observeViewModel() {
+        if (viewModel != null) {
+            // Observar errores del ViewModel
+            viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+                if (error != null) {
+                    Toast.makeText(getContext(),  error, Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Observar cuando se crea exitosamente una reserva
+            viewModel.getBookingCreated().observe(getViewLifecycleOwner(), bookingCreated -> {
+                if (bookingCreated != null && bookingCreated) {
+                    Toast.makeText(getContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
+                    
+                    // Navegar de vuelta a la lista de reservas
+                    if (getActivity() != null) {
+                        getActivity().onBackPressed();
+                    }
+                }
+            });
         }
     }
 
@@ -91,13 +119,64 @@ public class CreateBookingFragment extends Fragment {
             @Override
             public void onSuccess(List<ClaseDto> clases) {
                 clasesDisponibles = clases;
-                setupSpinnersWithAPIData();
+                loadAdditionalData();
             }
 
             @Override
             public void onError(String error) {
                 Toast.makeText(getContext(), "Error al cargar clases: " + error, Toast.LENGTH_SHORT).show();
                 setupSpinnersWithMockData(); // Fallback a datos mock
+            }
+        });
+    }
+
+    private void loadAdditionalData() {
+        // Cargar instructores
+        claseRepository.getInstructores(new ClaseRepository.InstructorCallback() {
+            @Override
+            public void onSuccess(List<InstructorDto> instructoresList) {
+                instructores = instructoresList;
+                loadSedes();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Error al cargar instructores: " + error, Toast.LENGTH_SHORT).show();
+                loadSedes(); // Continuar con sedes aunque falle instructores
+            }
+        });
+    }
+
+    private void loadSedes() {
+        // Cargar sedes
+        claseRepository.getSedes(new ClaseRepository.SedeCallback() {
+            @Override
+            public void onSuccess(List<SedeDto> sedesList) {
+                sedes = sedesList;
+                loadDisciplinas();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Error al cargar sedes: " + error, Toast.LENGTH_SHORT).show();
+                loadDisciplinas(); // Continuar con disciplinas aunque falle sedes
+            }
+        });
+    }
+
+    private void loadDisciplinas() {
+        // Cargar disciplinas
+        claseRepository.getDisciplinas(new ClaseRepository.DisciplinaCallback() {
+            @Override
+            public void onSuccess(List<DisciplinaDto> disciplinasList) {
+                disciplinas = disciplinasList;
+                setupSpinnersWithAPIData();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Error al cargar disciplinas: " + error, Toast.LENGTH_SHORT).show();
+                setupSpinnersWithAPIData(); // Configurar con los datos que tengamos
             }
         });
     }
@@ -118,10 +197,20 @@ public class CreateBookingFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line, nombresClases);
         spinnerClass.setAdapter(classAdapter);
         
+        // Configurar combo de instructores
+        setupInstructorSpinner();
+        
+        // Configurar combo de fechas
+        setupDateSpinner();
+        
+        // Configurar combo de horarios
+        setupTimeSpinner();
+        
         if (!nombresClases.isEmpty()) {
             spinnerClass.setText(nombresClases.get(0), false);
             tvSelectedClass.setText(nombresClases.get(0));
             claseSeleccionada = clasesDisponibles.get(0);
+            updateClassDetails();
         }
 
         // Configurar listeners
@@ -132,11 +221,150 @@ public class CreateBookingFragment extends Fragment {
         });
     }
 
+    private void setupInstructorSpinner() {
+        final List<String> nombresInstructores;
+        
+        // Si hay una clase seleccionada, filtrar instructores por disciplina
+        if (claseSeleccionada != null && claseSeleccionada.getDisciplina() != null) {
+            // Obtener instructores que enseñan la misma disciplina
+            nombresInstructores = getInstructoresPorDisciplina(claseSeleccionada.getDisciplina().getId());
+        } else {
+            // Si no hay clase seleccionada, mostrar todos los instructores
+            List<String> todosInstructores = new ArrayList<>();
+            for (InstructorDto instructor : instructores) {
+                todosInstructores.add(instructor.getNombreCompleto());
+            }
+            nombresInstructores = todosInstructores;
+        }
+        
+        ArrayAdapter<String> instructorAdapter = new ArrayAdapter<>(getContext(), 
+                android.R.layout.simple_dropdown_item_1line, nombresInstructores);
+        spinnerInstructor.setAdapter(instructorAdapter);
+        
+        spinnerInstructor.setOnItemClickListener((parent, view, position, id) -> {
+            final String instructorSeleccionadoTemp = nombresInstructores.get(position);
+            tvSelectedInstructor.setText(instructorSeleccionadoTemp);
+            // Actualizar la variable de instancia usando un método helper
+            updateInstructorSelection(instructorSeleccionadoTemp);
+        });
+    }
+
+    private List<String> getInstructoresPorDisciplina(Long disciplinaId) {
+        List<String> instructoresDisciplina = new ArrayList<>();
+        
+        // Buscar instructores que enseñan clases de la disciplina seleccionada
+        for (ClaseDto clase : clasesDisponibles) {
+            if (clase.getDisciplina() != null && 
+                clase.getDisciplina().getId().equals(disciplinaId) &&
+                clase.getInstructor() != null) {
+                
+                String nombreInstructor = clase.getInstructor().getNombreCompleto();
+                if (!instructoresDisciplina.contains(nombreInstructor)) {
+                    instructoresDisciplina.add(nombreInstructor);
+                }
+            }
+        }
+        
+        return instructoresDisciplina;
+    }
+
+    private void updateInstructorSelection(String instructor) {
+        instructorSeleccionado = instructor;
+    }
+
+    private void updateDateSelection(String fecha) {
+        fechaSeleccionada = fecha;
+    }
+
+    private void updateTimeSelection(String horario) {
+        horarioSeleccionado = horario;
+    }
+
+    private void setupDateSpinner() {
+        // Obtener fechas únicas filtradas por disciplina si hay una clase seleccionada
+        List<String> fechasUnicas = new ArrayList<>();
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+        
+        Long disciplinaId = null;
+        if (claseSeleccionada != null && claseSeleccionada.getDisciplina() != null) {
+            disciplinaId = claseSeleccionada.getDisciplina().getId();
+        }
+        
+        for (ClaseDto clase : clasesDisponibles) {
+            if (clase.getFechaInicio() != null) {
+                // Si hay disciplina seleccionada, filtrar por esa disciplina
+                if (disciplinaId == null || 
+                    (clase.getDisciplina() != null && clase.getDisciplina().getId().equals(disciplinaId))) {
+                    
+                    String fecha = dateFormat.format(clase.getFechaInicio());
+                    if (!fechasUnicas.contains(fecha)) {
+                        fechasUnicas.add(fecha);
+                    }
+                }
+            }
+        }
+        
+        ArrayAdapter<String> dateAdapter = new ArrayAdapter<>(getContext(), 
+                android.R.layout.simple_dropdown_item_1line, fechasUnicas);
+        spinnerDate.setAdapter(dateAdapter);
+        
+        spinnerDate.setOnItemClickListener((parent, view, position, id) -> {
+            String fechaSeleccionadaTemp = fechasUnicas.get(position);
+            tvSelectedDate.setText(fechaSeleccionadaTemp);
+            // Actualizar la variable de instancia usando un método helper
+            updateDateSelection(fechaSeleccionadaTemp);
+        });
+    }
+
+    private void setupTimeSpinner() {
+        // Obtener horarios únicos filtrados por disciplina si hay una clase seleccionada
+        List<String> horariosUnicos = new ArrayList<>();
+        java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+        
+        Long disciplinaId = null;
+        if (claseSeleccionada != null && claseSeleccionada.getDisciplina() != null) {
+            disciplinaId = claseSeleccionada.getDisciplina().getId();
+        }
+        
+        for (ClaseDto clase : clasesDisponibles) {
+            if (clase.getFechaInicio() != null) {
+                // Si hay disciplina seleccionada, filtrar por esa disciplina
+                if (disciplinaId == null || 
+                    (clase.getDisciplina() != null && clase.getDisciplina().getId().equals(disciplinaId))) {
+                    
+                    String horario = timeFormat.format(clase.getFechaInicio());
+                    if (!horariosUnicos.contains(horario)) {
+                        horariosUnicos.add(horario);
+                    }
+                }
+            }
+        }
+        
+        ArrayAdapter<String> timeAdapter = new ArrayAdapter<>(getContext(), 
+                android.R.layout.simple_dropdown_item_1line, horariosUnicos);
+        spinnerTime.setAdapter(timeAdapter);
+        
+        spinnerTime.setOnItemClickListener((parent, view, position, id) -> {
+            String horarioSeleccionadoTemp = horariosUnicos.get(position);
+            tvSelectedTime.setText(horarioSeleccionadoTemp);
+            // Actualizar la variable de instancia usando un método helper
+            updateTimeSelection(horarioSeleccionadoTemp);
+        });
+    }
+
     private void updateClassDetails() {
         if (claseSeleccionada != null) {
-            // Actualizar detalles de la clase seleccionada
+            // Actualizar todos los combos con datos filtrados por disciplina
+            setupInstructorSpinner();
+            setupDateSpinner();
+            setupTimeSpinner();
+            
+            // Actualizar detalles de la clase seleccionada en los TextView
             if (claseSeleccionada.getInstructor() != null) {
-                tvSelectedInstructor.setText(claseSeleccionada.getInstructor().getNombreCompleto());
+                instructorSeleccionado = claseSeleccionada.getInstructor().getNombreCompleto();
+                tvSelectedInstructor.setText(instructorSeleccionado);
+                // También actualizar el combo de instructor
+                spinnerInstructor.setText(instructorSeleccionado, false);
             }
             
             if (claseSeleccionada.getSede() != null) {
@@ -148,8 +376,15 @@ public class CreateBookingFragment extends Fragment {
                 java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
                 java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
                 
-                tvSelectedDate.setText(dateFormat.format(claseSeleccionada.getFechaInicio()));
-                tvSelectedTime.setText(timeFormat.format(claseSeleccionada.getFechaInicio()));
+                fechaSeleccionada = dateFormat.format(claseSeleccionada.getFechaInicio());
+                horarioSeleccionado = timeFormat.format(claseSeleccionada.getFechaInicio());
+                
+                tvSelectedDate.setText(fechaSeleccionada);
+                tvSelectedTime.setText(horarioSeleccionado);
+                
+                // También actualizar los combos
+                spinnerDate.setText(fechaSeleccionada, false);
+                spinnerTime.setText(horarioSeleccionado, false);
             }
         }
     }
@@ -201,17 +436,13 @@ public class CreateBookingFragment extends Fragment {
             // Usar el ViewModel para crear la reserva
             if (viewModel != null) {
                 viewModel.createBooking(booking);
-                Toast.makeText(getContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
-                
-                // Navegar de vuelta a la lista de reservas
-                if (getActivity() != null) {
-                    getActivity().onBackPressed();
-                }
+                // El mensaje de éxito se mostrará cuando se complete la operación exitosamente
+                // a través del observer en observeViewModel()
             } else {
                 Toast.makeText(getContext(), "Error: ViewModel no inicializado", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Error al crear la reserva: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }
