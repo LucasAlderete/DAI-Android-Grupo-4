@@ -5,14 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import com.google.android.material.button.MaterialButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import android.widget.ArrayAdapter;
+import com.google.android.material.button.MaterialButton;
+import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.dai_android_grupo_4.R;
@@ -27,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class CreateBookingFragment extends Fragment {
 
-    private Spinner spinnerClass, spinnerInstructor, spinnerDate, spinnerTime;
+    private AutoCompleteTextView spinnerClass, spinnerInstructor, spinnerDate, spinnerTime;
     private TextView tvSelectedClass, tvSelectedInstructor, tvSelectedDate, tvSelectedTime;
     private MaterialButton btnCreateBooking;
     private BookingViewModel viewModel;
@@ -43,6 +44,7 @@ public class CreateBookingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         initViews(view);
+        initViewModel();
         setupSpinners();
         setupClickListeners();
     }
@@ -61,8 +63,14 @@ public class CreateBookingFragment extends Fragment {
         btnCreateBooking = view.findViewById(R.id.btn_create_booking);
     }
 
+    private void initViewModel() {
+        if (getActivity() != null) {
+            viewModel = new ViewModelProvider(getActivity()).get(BookingViewModel.class);
+        }
+    }
+
     private void setupSpinners() {
-        // Configurar spinner de clases
+        // Configurar AutoCompleteTextView de clases
         List<String> classes = new ArrayList<>();
         classes.add("Yoga Matutino");
         classes.add("Pilates Avanzado");
@@ -71,11 +79,12 @@ public class CreateBookingFragment extends Fragment {
         classes.add("Zumba");
         
         ArrayAdapter<String> classAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_spinner_item, classes);
-        classAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_dropdown_item_1line, classes);
         spinnerClass.setAdapter(classAdapter);
+        spinnerClass.setText(classes.get(0), false); // Establecer valor por defecto
+        tvSelectedClass.setText(classes.get(0));
 
-        // Configurar spinner de instructores
+        // Configurar AutoCompleteTextView de instructores
         List<String> instructors = new ArrayList<>();
         instructors.add("María González");
         instructors.add("Carlos Ruiz");
@@ -84,11 +93,12 @@ public class CreateBookingFragment extends Fragment {
         instructors.add("Laura Fernández");
         
         ArrayAdapter<String> instructorAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_spinner_item, instructors);
-        instructorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_dropdown_item_1line, instructors);
         spinnerInstructor.setAdapter(instructorAdapter);
+        spinnerInstructor.setText(instructors.get(0), false); // Establecer valor por defecto
+        tvSelectedInstructor.setText(instructors.get(0));
 
-        // Configurar spinner de fechas
+        // Configurar AutoCompleteTextView de fechas
         List<String> dates = new ArrayList<>();
         dates.add("15 de Marzo, 2024");
         dates.add("16 de Marzo, 2024");
@@ -97,11 +107,12 @@ public class CreateBookingFragment extends Fragment {
         dates.add("19 de Marzo, 2024");
         
         ArrayAdapter<String> dateAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_spinner_item, dates);
-        dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_dropdown_item_1line, dates);
         spinnerDate.setAdapter(dateAdapter);
+        spinnerDate.setText(dates.get(0), false); // Establecer valor por defecto
+        tvSelectedDate.setText(dates.get(0));
 
-        // Configurar spinner de horarios
+        // Configurar AutoCompleteTextView de horarios
         List<String> times = new ArrayList<>();
         times.add("07:00 - 08:00");
         times.add("09:00 - 10:00");
@@ -110,49 +121,30 @@ public class CreateBookingFragment extends Fragment {
         times.add("20:00 - 21:00");
         
         ArrayAdapter<String> timeAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_spinner_item, times);
-        timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_dropdown_item_1line, times);
         spinnerTime.setAdapter(timeAdapter);
+        spinnerTime.setText(times.get(1), false); // Establecer valor por defecto
+        tvSelectedTime.setText(times.get(1));
 
         // Configurar listeners para actualizar los TextViews
-        spinnerClass.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvSelectedClass.setText(classes.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+        spinnerClass.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedClass = classes.get(position);
+            tvSelectedClass.setText(selectedClass);
         });
 
-        spinnerInstructor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvSelectedInstructor.setText(instructors.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+        spinnerInstructor.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedInstructor = instructors.get(position);
+            tvSelectedInstructor.setText(selectedInstructor);
         });
 
-        spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvSelectedDate.setText(dates.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+        spinnerDate.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedDate = dates.get(position);
+            tvSelectedDate.setText(selectedDate);
         });
 
-        spinnerTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvSelectedTime.setText(times.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+        spinnerTime.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedTime = times.get(position);
+            tvSelectedTime.setText(selectedTime);
         });
     }
 
@@ -163,24 +155,42 @@ public class CreateBookingFragment extends Fragment {
     }
 
     private void createBooking() {
-        // Crear objeto Booking con los datos seleccionados
-        Booking booking = new Booking();
-        booking.setClassName(tvSelectedClass.getText().toString());
-        booking.setInstructor(tvSelectedInstructor.getText().toString());
-        booking.setDate(tvSelectedDate.getText().toString());
-        booking.setTime(tvSelectedTime.getText().toString());
-        booking.setLocation("RitmoFit Centro"); // Por defecto
-        booking.setDuration("60 min");
-        booking.setCapacity(20);
-        booking.setCurrentBookings(0);
-        booking.setDescription("Reserva creada desde la app");
+        // Validar que todos los campos estén seleccionados
+        if (spinnerClass.getText().toString().isEmpty() ||
+            spinnerInstructor.getText().toString().isEmpty() ||
+            spinnerDate.getText().toString().isEmpty() ||
+            spinnerTime.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Por favor selecciona todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Aquí se integraría con el ViewModel para crear la reserva
-        Toast.makeText(getContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
-        
-        // Navegar de vuelta a la lista de reservas
-        if (getActivity() != null) {
-            getActivity().onBackPressed();
+        try {
+            // Crear objeto Booking con los datos seleccionados
+            Booking booking = new Booking();
+            booking.setClassName(spinnerClass.getText().toString());
+            booking.setInstructor(spinnerInstructor.getText().toString());
+            booking.setDate(spinnerDate.getText().toString());
+            booking.setTime(spinnerTime.getText().toString());
+            booking.setLocation("RitmoFit Centro"); // Por defecto
+            booking.setDuration("60 min");
+            booking.setCapacity(20);
+            booking.setCurrentBookings(0);
+            booking.setDescription("Reserva creada desde la app");
+
+            // Usar el ViewModel para crear la reserva
+            if (viewModel != null) {
+                viewModel.createBooking(booking);
+                Toast.makeText(getContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
+                
+                // Navegar de vuelta a la lista de reservas
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
+            } else {
+                Toast.makeText(getContext(), "Error: ViewModel no inicializado", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error al crear la reserva: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -3,36 +3,20 @@ package com.example.dai_android_grupo_4;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import com.google.android.material.button.MaterialButton;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.example.dai_android_grupo_4.data.api.ApiService;
-import com.example.dai_android_grupo_4.data.api.repository.ReservaServiceCallback;
-import com.example.dai_android_grupo_4.model.Reserva;
-import com.example.dai_android_grupo_4.services.ReservaService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "ActivityLifecycle";
 
-    @Inject
-    ReservaService reservaService;
-
-    private ListView listView;
-    private List<String> reservaDisplayList;
-    private ArrayAdapter<String> adapter;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,21 +24,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "⭐ onCreate: La Activity está siendo creada");
         setContentView(R.layout.activity_main);
 
-        // Configurar el botón de reservas (versión antigua)
-        MaterialButton btnReservas = findViewById(R.id.btnReservas);
-        btnReservas.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ReservasActivity.class);
-            startActivity(intent);
-        });
-
-        // Configurar el botón de reservas (nueva versión con fragments)
-        MaterialButton btnNewReservas = findViewById(R.id.btnNewReservas);
-        if (btnNewReservas != null) {
-            btnNewReservas.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);
-                startActivity(intent);
-            });
-        }
+        setupBottomNavigation();
 
     }
 
@@ -68,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "⭐ onResume: La Activity es visible y tiene el foco");
+        
+        // Sincronizar la navbar para asegurar que "Home" esté seleccionado
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     @Override
@@ -104,5 +79,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "⭐ onRestoreInstanceState: Restaurando el estado guardado de la Activity");
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        
+        // Establecer "Home" como seleccionado por defecto en MainActivity
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_home) {
+            // Ya estamos en Home, mantener seleccionado
+            return true;
+        } else if (itemId == R.id.nav_my_bookings) {
+            // Navegar a la actividad de reservas
+            Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.nav_booking_history) {
+            // Navegar a la actividad de reservas con el historial seleccionado
+            Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.booking.ui.BookingActivity.class);
+            intent.putExtra("selected_tab", "history");
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.nav_profile) {
+            // TODO: Implementar navegación a Mi Perfil más tarde
+            return true;
+        }
+        
+        return false;
     }
 }

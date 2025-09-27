@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ public class BookingListFragment extends Fragment implements BookingAdapter.OnBo
 
     private RecyclerView recyclerView;
     private CircularProgressIndicator progressBar;
+    private FloatingActionButton fabCreateBooking;
     private BookingAdapter adapter;
     private BookingViewModel viewModel;
     private List<Booking> bookings = new ArrayList<>();
@@ -45,6 +47,7 @@ public class BookingListFragment extends Fragment implements BookingAdapter.OnBo
         
         initViews(view);
         setupRecyclerView();
+        setupFloatingActionButton();
         setupViewModel();
         observeData();
     }
@@ -52,12 +55,23 @@ public class BookingListFragment extends Fragment implements BookingAdapter.OnBo
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_bookings);
         progressBar = view.findViewById(R.id.progress_bar);
+        fabCreateBooking = view.findViewById(R.id.fab_create_booking);
     }
 
     private void setupRecyclerView() {
         adapter = new BookingAdapter(bookings, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setupFloatingActionButton() {
+        fabCreateBooking.setOnClickListener(v -> {
+            CreateBookingFragment createBookingFragment = new CreateBookingFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, createBookingFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void setupViewModel() {

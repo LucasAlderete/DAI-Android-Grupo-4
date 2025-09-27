@@ -92,4 +92,23 @@ public class BookingViewModel extends ViewModel {
     public void refreshBookings() {
         loadUserBookings();
     }
+
+    public void createBooking(Booking booking) {
+        _loading.setValue(true);
+        _error.setValue(null);
+        
+        bookingRepository.createBooking(booking, new BookingRepository.BookingCallback() {
+            @Override
+            public void onSuccess(List<Booking> bookings) {
+                // Recargar la lista después de crear la reserva
+                loadUserBookings();
+            }
+
+            @Override
+            public void onError(String error) {
+                _error.setValue(error);
+                _loading.setValue(false);
+            }
+        });
+    }
 }
