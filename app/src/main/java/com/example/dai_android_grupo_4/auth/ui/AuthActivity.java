@@ -33,6 +33,9 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TEMPORAL: Forzar logout para testing
+        tokenRepository.clearToken();
+
         // Si ya hay token guardado → validar token
         if (tokenRepository.hasToken()) {
             validateTokenAndProceed();
