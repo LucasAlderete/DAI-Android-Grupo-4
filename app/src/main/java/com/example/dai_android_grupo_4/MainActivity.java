@@ -7,6 +7,8 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.dai_android_grupo_4.profile.ui.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -107,7 +109,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             startActivity(intent);
             return true;
         } else if (itemId == R.id.nav_profile) {
-            // TODO: Implementar navegación a Mi Perfil más tarde
+            Intent intent = new Intent(MainActivity.this, com.example.dai_android_grupo_4.profile.ui.ProfileActivity.class);
+            startActivity(intent);
             return true;
         }
         

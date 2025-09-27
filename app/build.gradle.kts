@@ -74,8 +74,6 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
     implementation(libs.recyclerview)
     kapt(libs.hilt.compiler)
     
