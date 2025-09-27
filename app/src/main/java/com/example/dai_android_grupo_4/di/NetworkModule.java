@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private final String API_URL = "http://192.168.0.93:8080/api/";
+    private final String API_URL = "http://10.0.2.2:8080/api/";
 
     @Provides
     @Singleton
@@ -40,6 +40,9 @@ public class NetworkModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .cache(cache)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
                 .addNetworkInterceptor(chain -> {
                     return chain.proceed(chain.request())
                             .newBuilder()
