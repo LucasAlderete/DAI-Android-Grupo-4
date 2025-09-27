@@ -1,17 +1,21 @@
 package com.example.dai_android_grupo_4.booking.repository;
 
+import com.example.dai_android_grupo_4.booking.api.BookingService;
 import com.example.dai_android_grupo_4.booking.model.Booking;
 import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.model.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import com.example.dai_android_grupo_4.booking.model.CreateBookingRequest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,8 +28,11 @@ public class BookingRepositoryImpl implements BookingRepository {
     private final ApiService apiService;
     private final Gson gson;
 
+    private final BookingService bookingService;
+
     @Inject
-    public BookingRepositoryImpl(ApiService apiService, Gson gson) {
+    public BookingRepositoryImpl(BookingService bookingService,ApiService apiService, Gson gson) {
+        this.bookingService = bookingService;
         this.apiService = apiService;
         this.gson = gson;
     }
@@ -58,16 +65,16 @@ public class BookingRepositoryImpl implements BookingRepository {
             @Override
             public void onSuccess(List<Booking> bookings) {
                 List<Booking> filteredBookings = new ArrayList<>();
-                
+
                 for (Booking booking : bookings) {
                     boolean matchesStatus = status == null || status.isEmpty() || status.equals(booking.getStatus());
                     boolean matchesDate = date == null || date.isEmpty() || date.equals(booking.getDate());
-                    
+
                     if (matchesStatus && matchesDate) {
                         filteredBookings.add(booking);
                     }
                 }
-                
+
                 callback.onSuccess(filteredBookings);
             }
 
@@ -108,14 +115,14 @@ public class BookingRepositoryImpl implements BookingRepository {
     public void createBooking(Booking booking, BookingCallback callback) {
         // Extraer el claseId del booking
         Long claseId = booking.getClaseId();
-        
+
         if (claseId == null) {
             callback.onError("ID de clase no válido");
             return;
         }
-        
+
         CrearReservaDto crearReservaDto = new CrearReservaDto(claseId);
-        
+
         apiService.crearReserva(crearReservaDto).enqueue(new Callback<ReservaDto>() {
             @Override
             public void onResponse(Call<ReservaDto> call, Response<ReservaDto> response) {
@@ -134,6 +141,26 @@ public class BookingRepositoryImpl implements BookingRepository {
             }
         });
     }
+
+        @Override
+        public void createBooking(long claseId, String token, SingleBookingCallback callback) {
+            CreateBookingRequest request = new CreateBookingRequest(claseId);
+            bookingService.createBooking("Bearer " + token, request).enqueue(new Callback<Booking>() {
+                @Override
+                public void onResponse(Call<Booking> call, Response<Booking> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        callback.onSuccess(response.body());
+                    } else {
+                        callback.onError("Error al crear la reserva");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Booking> call, Throwable t) {
+                    callback.onError(t.getMessage());
+                }
+            });
+        }
 
     @Override
     public void getBookingById(String bookingId, BookingCallback callback) {
@@ -164,37 +191,37 @@ public class BookingRepositoryImpl implements BookingRepository {
     private List<Booking> convertToBookingList(List<ReservaDto> reservas) {
         List<Booking> bookings = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        
+
         for (ReservaDto reserva : reservas) {
             Booking booking = new Booking();
             booking.setId(reserva.getId().toString());
             booking.setClaseId(reserva.getClaseId());
             booking.setStatus(reserva.getEstado());
             booking.setCreatedAt(reserva.getFechaReserva());
-            
+
             if (reserva.getClase() != null) {
                 ClaseDto clase = reserva.getClase();
                 booking.setClassName(clase.getNombre());
                 booking.setDescription(clase.getDescripcion());
                 booking.setCapacity(clase.getCupoMaximo() != null ? clase.getCupoMaximo() : 0);
                 booking.setCurrentBookings(clase.getCupoActual() != null ? clase.getCupoActual() : 0);
-                
+
                 if (clase.getFechaInicio() != null) {
                     booking.setDate(dateFormat.format(clase.getFechaInicio()));
                 }
-                
+
                 if (clase.getInstructor() != null) {
                     booking.setInstructor(clase.getInstructor().getNombreCompleto());
                 }
-                
+
                 if (clase.getSede() != null) {
                     booking.setLocation(clase.getSede().getNombre());
                 }
             }
-            
+
             bookings.add(booking);
         }
-        
+
         return bookings;
     }
 
@@ -211,7 +238,7 @@ public class BookingRepositoryImpl implements BookingRepository {
         } catch (IOException | JsonSyntaxException e) {
             // Si no se puede parsear el error, usar el código de estado
         }
-        
+
         // Fallback al código de error si no se puede extraer el mensaje
         return "Error al crear reserva: " + response.code();
     }
