@@ -26,7 +26,7 @@ public class BookingDetailFragment extends Fragment {
     private static final String ARG_BOOKING = "booking";
     
     private Booking booking;
-    private TextView tvClassName, tvInstructor, tvDate, tvTime, tvLocation, tvStatus;
+    private TextView tvClassName, tvInstructor, tvDate, tvLocation, tvStatus;
     private Button btnCancel, btnGetDirections;
     private BookingViewModel viewModel;
 
@@ -67,7 +67,6 @@ public class BookingDetailFragment extends Fragment {
         tvClassName = view.findViewById(R.id.tv_class_name);
         tvInstructor = view.findViewById(R.id.tv_instructor);
         tvDate = view.findViewById(R.id.tv_date);
-        tvTime = view.findViewById(R.id.tv_time);
         tvLocation = view.findViewById(R.id.tv_location);
         tvStatus = view.findViewById(R.id.tv_status);
         btnCancel = view.findViewById(R.id.btn_cancel);
@@ -119,7 +118,6 @@ public class BookingDetailFragment extends Fragment {
             tvClassName.setText(booking.getClassName());
             tvInstructor.setText(booking.getInstructor());
             tvDate.setText(booking.getDate());
-            tvTime.setText(booking.getTime());
             tvLocation.setText(booking.getLocation());
             tvStatus.setText(booking.getStatus());
             
