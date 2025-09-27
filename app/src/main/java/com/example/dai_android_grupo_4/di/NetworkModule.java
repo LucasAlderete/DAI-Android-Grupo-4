@@ -35,12 +35,8 @@ import java.io.IOException;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    // private final String API_URL = "http://10.0.2.2:8080/api/";
-
-
-
-
-    private final String API_URL = "http://192.168.0.31:8080/api/";
+    private final String API_URL = "http://10.0.2.2:8080/api/";
+    //  private final String API_URL = "http://192.168.0.93:8080/api/";
 
     @Provides
     @Singleton
@@ -93,8 +89,6 @@ public class NetworkModule {
     ApiService provideApiService(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
     }
-
-    // Adapter personalizado para manejar fechas ISO 8601
     private static class DateTypeAdapter extends TypeAdapter<Date> {
         private final DateFormat dateFormat;
 
@@ -121,7 +115,6 @@ public class NetworkModule {
             try {
                 return dateFormat.parse(dateString);
             } catch (Exception e) {
-                // Si falla el formato principal, intentar con otros formatos comunes
                 try {
                     SimpleDateFormat fallbackFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
                     return fallbackFormat.parse(dateString);
@@ -148,8 +141,6 @@ public class NetworkModule {
     LessonService provideLessonService(Retrofit retrofit) {
         return retrofit.create(LessonService.class);
     }
-
-    // OkHttpClient SIN AuthInterceptor para AuthApiService (evita ciclo de dependencia)
     @Provides
     @Singleton
     @Named("auth")
@@ -163,7 +154,6 @@ public class NetworkModule {
                 .build();
     }
 
-    // Retrofit específico para AuthApiService
     @Provides
     @Singleton
     @Named("auth")

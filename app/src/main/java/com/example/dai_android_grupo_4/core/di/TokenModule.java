@@ -22,7 +22,7 @@ public class TokenModule {
     @Singleton
     public TokenRepository provideTokenRepository(
             @ApplicationContext Context context,
-            AuthApiService authApiService  // <--- usar AuthApiService, no ApiService
+            AuthApiService authApiService
     ) {
         return new TokenRepositoryImpl(context, authApiService);
     }

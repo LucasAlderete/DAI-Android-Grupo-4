@@ -33,14 +33,23 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (tokenRepository.hasToken()) {
-            validateTokenAndProceed();
-        } else {
-            setupAuthFlow();
+        setContentView(R.layout.auth_activity);
+
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.auth_nav_host_fragment);
+
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
         }
+
+        if (tokenRepository.hasToken()) {
+            // Si hay token, mostrar pantalla de desbloqueo biométrico
+            navController.navigate(R.id.biometricUnlockFragment);
+        }
+        // Si no hay token, la navegación inicia en loginFragment
     }
 
-    private void validateTokenAndProceed() {
+    public void validateTokenAndProceed() {
         Call<TokenValidationResponse> call = tokenRepository.validateToken();
         if (call == null) {
             setupAuthFlow();
@@ -76,13 +85,8 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void setupAuthFlow() {
-        setContentView(R.layout.auth_activity);
-
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.auth_nav_host_fragment);
-
-        if (navHostFragment != null) {
-            navController = navHostFragment.getNavController();
+        if (navController != null) {
+            navController.navigate(R.id.loginFragment);
         }
     }
 }

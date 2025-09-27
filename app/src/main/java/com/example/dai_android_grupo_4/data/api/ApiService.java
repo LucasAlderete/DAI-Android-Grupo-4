@@ -16,7 +16,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    // ================= RESERVAS =================
+    // RESERVAS
     @GET("reservas")
     Call<PageReservaDto> getMisReservas(@Query("page") Integer page, @Query("size") Integer size);
 
@@ -29,7 +29,7 @@ public interface ApiService {
     @GET("reservas/proximas")
     Call<List<ReservaDto>> getProximasReservas();
 
-    // ================= CATÁLOGO DE CLASES =================
+    // CATÁLOGO DE CLASES
     @GET("clases")
     Call<PageClaseDto> getClases(@Query("sedeId") Long sedeId, 
                                 @Query("disciplinaId") Long disciplinaId,
@@ -50,23 +50,23 @@ public interface ApiService {
     @GET("clases/disciplinas")
     Call<List<DisciplinaDto>> getDisciplinas();
 
-    // ================= AUTH =================
-    @POST("auth/login")  // POST /api/auth/login
+    // AUTH
+    @POST("auth/login")
     Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
-    @POST("auth/register")  // POST /api/auth/register
+    @POST("auth/register")
     Call<AuthResponse> register(@Body RegisterRequest registerRequest);
 
-    @POST("auth/verificar-codigo")  // POST /api/auth/verificar-codigo
+    @POST("auth/verificar-codigo")
     Call<AuthResponse> verifyOtp(@Body VerifyOtpRequest verifyOtpRequest);
 
-    @POST("auth/reenviar-codigo")  // POST /api/auth/reenviar-codigo
+    @POST("auth/reenviar-codigo")
     Call<AuthResponse> resendOtp(@Body OtpRequest otpRequest);
 
-    @GET("auth/validate")  // GET /api/auth/validate
+    @GET("auth/validate")
     Call<TokenValidationResponse> validateToken(@Header("Authorization") String token);
 
-    // ================= USUARIO =================
+    // USUARIO
     @GET("usuario/perfil")
     Call<UsuarioResponse> getPerfil(@Header("Authorization") String token);
 

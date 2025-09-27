@@ -26,14 +26,12 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        // Obtener el token en tiempo de ejecución
         String token = tokenRepositoryProvider.get().getToken();
 
         if (token == null || token.isEmpty()) {
             return chain.proceed(originalRequest);
         }
 
-        // Agregar header Authorization con el token
         Request newRequest = originalRequest.newBuilder()
                 .addHeader("Authorization", "Bearer " + token)
                 .build();

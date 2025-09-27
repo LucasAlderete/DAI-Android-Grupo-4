@@ -46,7 +46,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Setup Toolbar con flecha de volver
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -67,21 +66,19 @@ public class ProfileActivity extends AppCompatActivity {
         btnActualizar.setOnClickListener(v -> actualizarPerfil());
 
         btnLogout.setOnClickListener(v -> {
-            tokenRepository.clearToken(); // Limpiar token
+            tokenRepository.clearToken();
             Toast.makeText(ProfileActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
 
-            // Redirigir al LoginFragment en AuthNavHostActivity
             Intent intent = new Intent(ProfileActivity.this, AuthActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
     }
 
-    // Acción de la flecha de volver en el toolbar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish(); // Vuelve a la actividad anterior
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

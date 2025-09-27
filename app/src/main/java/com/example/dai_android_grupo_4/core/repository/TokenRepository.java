@@ -9,6 +9,5 @@ public interface TokenRepository {
     void clearToken();
     boolean hasToken();
 
-    // Cambiado a TokenValidationResponse
     Call<TokenValidationResponse> validateToken();
 }
