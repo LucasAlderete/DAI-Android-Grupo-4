@@ -1,17 +1,21 @@
 package com.example.dai_android_grupo_4.profile.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.dai_android_grupo_4.R;
+import com.example.dai_android_grupo_4.auth.ui.AuthActivity;
+import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.model.UsuarioResponse;
 import com.example.dai_android_grupo_4.data.api.model.UsuarioUpdateRequest;
-import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -21,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 @AndroidEntryPoint
 public class ProfileActivity extends AppCompatActivity {
@@ -34,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private ImageView imgProfile;
     private TextInputEditText edtNombre, edtEmail;
-    private MaterialButton btnActualizar;
+    private MaterialButton btnActualizar, btnLogout;
 
     private String token;
 
@@ -43,16 +46,45 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // Setup Toolbar con flecha de volver
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Perfil");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         imgProfile = findViewById(R.id.imgProfile);
         edtNombre = findViewById(R.id.edtNombre);
         edtEmail = findViewById(R.id.edtEmail);
         btnActualizar = findViewById(R.id.btnActualizar);
+        btnLogout = findViewById(R.id.btnLogout);
 
-        token = "Bearer " + tokenRepository.getToken(); // obtenemos token guardado
+        token = "Bearer " + tokenRepository.getToken();
 
         cargarPerfil();
 
         btnActualizar.setOnClickListener(v -> actualizarPerfil());
+
+        btnLogout.setOnClickListener(v -> {
+            tokenRepository.clearToken(); // Limpiar token
+            Toast.makeText(ProfileActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+
+            // Redirigir al LoginFragment en AuthNavHostActivity
+            Intent intent = new Intent(ProfileActivity.this, AuthActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+    }
+
+    // Acción de la flecha de volver en el toolbar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // Vuelve a la actividad anterior
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void cargarPerfil() {
