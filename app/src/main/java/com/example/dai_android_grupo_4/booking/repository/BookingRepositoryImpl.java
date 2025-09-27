@@ -211,12 +211,26 @@ public class BookingRepositoryImpl implements BookingRepository {
                 }
 
                 if (clase.getInstructor() != null) {
-                    booking.setInstructor(clase.getInstructor().getNombreCompleto());
+                    String instructorName = clase.getInstructor().getNombreCompleto();
+                    booking.setInstructor(instructorName);
+                    android.util.Log.d("BookingRepo", "Instructor encontrado: " + instructorName);
+                } else {
+                    booking.setInstructor("Instructor no asignado");
+                    android.util.Log.d("BookingRepo", "Instructor es null para reserva: " + reserva.getId());
                 }
 
                 if (clase.getSede() != null) {
-                    booking.setLocation(clase.getSede().getNombre());
+                    String sedeName = clase.getSede().getNombre();
+                    booking.setLocation(sedeName);
+                    android.util.Log.d("BookingRepo", "Sede encontrada: " + sedeName);
+                } else {
+                    booking.setLocation("Sede no asignada");
+                    android.util.Log.d("BookingRepo", "Sede es null para reserva: " + reserva.getId());
                 }
+            } else {
+                android.util.Log.d("BookingRepo", "Clase es null para reserva: " + reserva.getId());
+                booking.setInstructor("Datos no disponibles");
+                booking.setLocation("Datos no disponibles");
             }
 
             bookings.add(booking);
