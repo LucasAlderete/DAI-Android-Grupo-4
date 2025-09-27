@@ -1,9 +1,10 @@
 package com.example.dai_android_grupo_4.di;
 
-
 import android.content.Context;
+import com.example.dai_android_grupo_4.booking.api.BookingService;
 import com.example.dai_android_grupo_4.core.interceptor.AuthInterceptor;
 import com.example.dai_android_grupo_4.data.api.ApiService;
+import com.example.dai_android_grupo_4.lessons.api.LessonService;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -65,5 +66,17 @@ public class NetworkModule {
     @Singleton
     ApiService provideApiService(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    BookingService provideBookingService(Retrofit retrofit) {
+        return retrofit.create(BookingService.class);
+    }
+
+    @Provides
+    @Singleton
+    LessonService provideLessonService(Retrofit retrofit) {
+        return retrofit.create(LessonService.class);
     }
 }

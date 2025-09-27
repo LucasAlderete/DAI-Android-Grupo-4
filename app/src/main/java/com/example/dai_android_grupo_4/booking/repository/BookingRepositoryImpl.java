@@ -1,18 +1,22 @@
 package com.example.dai_android_grupo_4.booking.repository;
 
+import com.example.dai_android_grupo_4.booking.api.BookingService;
 import com.example.dai_android_grupo_4.booking.model.Booking;
-
+import com.example.dai_android_grupo_4.booking.model.CreateBookingRequest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
 import javax.inject.Inject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BookingRepositoryImpl implements BookingRepository {
 
+    private final BookingService bookingService;
+
     @Inject
-    public BookingRepositoryImpl() {
-        // Constructor sin dependencias para evitar ciclos
+    public BookingRepositoryImpl(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -30,7 +34,7 @@ public class BookingRepositoryImpl implements BookingRepository {
         for (Booking booking : allBookings) {
             boolean matchesStatus = status == null || status.isEmpty() || status.equals(booking.getStatus());
             boolean matchesDate = date == null || date.isEmpty() || date.equals(booking.getDate());
-            
+
             if (matchesStatus && matchesDate) {
                 filteredBookings.add(booking);
             }
@@ -54,13 +58,27 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public void createBooking(Booking booking, BookingCallback callback) {
-        // Simular creación de reserva
-        List<Booking> updatedBookings = createMockBookings();
-        booking.setId("booking_" + System.currentTimeMillis());
-        booking.setStatus("CONFIRMED");
-        booking.setCreatedAt(new Date());
-        updatedBookings.add(booking);
-        callback.onSuccess(updatedBookings);
+        // Este servicio no es necesario para la funcionalidad
+    }
+
+    @Override
+    public void createBooking(long claseId, String token, SingleBookingCallback callback) {
+        CreateBookingRequest request = new CreateBookingRequest(claseId);
+        bookingService.createBooking("Bearer " + token, request).enqueue(new Callback<Booking>() {
+            @Override
+            public void onResponse(Call<Booking> call, Response<Booking> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error al crear la reserva");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Booking> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
     @Override
