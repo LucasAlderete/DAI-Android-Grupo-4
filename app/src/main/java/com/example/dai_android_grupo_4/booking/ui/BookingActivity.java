@@ -27,9 +27,16 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
 
         setupBottomNavigation();
         
-        // Cargar el fragment inicial
+        // Cargar el fragment inicial basado en el parámetro recibido
         if (savedInstanceState == null) {
-            loadFragment(new BookingListFragment());
+            String selectedTab = getIntent().getStringExtra("selected_tab");
+            if ("history".equals(selectedTab)) {
+                loadFragment(new BookingHistoryFragment());
+                bottomNavigationView.setSelectedItemId(R.id.nav_booking_history);
+            } else {
+                loadFragment(new BookingListFragment());
+                bottomNavigationView.setSelectedItemId(R.id.nav_my_bookings);
+            }
         }
     }
 
@@ -66,16 +73,14 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
     public void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
+        // No agregar al back stack para evitar problemas de navegación
+        // transaction.addToBackStack(null);
         transaction.commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
+        // Como no usamos back stack para fragments, simplemente cerrar la activity
+        super.onBackPressed();
     }
 }

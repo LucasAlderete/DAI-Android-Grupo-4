@@ -79,13 +79,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void setupBottomNavigation() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        
+        // Establecer "Home" como seleccionado por defecto en MainActivity
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_home) {
-            // TODO: Implementar navegación a Home más tarde
+            // Ya estamos en Home, mantener seleccionado
             return true;
         } else if (itemId == R.id.nav_my_bookings) {
             // Navegar a la actividad de reservas
