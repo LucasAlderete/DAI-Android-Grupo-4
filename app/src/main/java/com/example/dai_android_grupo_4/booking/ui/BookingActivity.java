@@ -43,10 +43,16 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         Fragment selectedFragment = null;
         
         int itemId = item.getItemId();
-        if (itemId == R.id.nav_my_bookings) {
+        if (itemId == R.id.nav_home) {
+            // TODO: Implementar navegación a Home más tarde
+            return true;
+        } else if (itemId == R.id.nav_my_bookings) {
             selectedFragment = new BookingListFragment();
         } else if (itemId == R.id.nav_booking_history) {
             selectedFragment = new BookingHistoryFragment();
+        } else if (itemId == R.id.nav_profile) {
+            // TODO: Implementar navegación a Mi Perfil más tarde
+            return true;
         }
         
         if (selectedFragment != null) {
