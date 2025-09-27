@@ -36,7 +36,7 @@ public class NetworkModule {
     @Singleton
     OkHttpClient provideOkHttpClient(Cache cache, AuthInterceptor authInterceptor) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         return new OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)

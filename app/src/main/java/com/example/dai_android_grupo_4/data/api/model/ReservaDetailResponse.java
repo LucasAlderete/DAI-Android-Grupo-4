@@ -23,11 +23,9 @@ public class ReservaDetailResponse {
     
     @SerializedName("fecha")
     private String fecha;
-    
-    // Constructor vacío requerido por Gson
+
     public ReservaDetailResponse() {}
-    
-    // Constructor con parámetros
+
     public ReservaDetailResponse(int id, String clase, String disciplina, String horario, 
                                 String profesor, String sede, String fecha) {
         this.id = id;
@@ -38,8 +36,7 @@ public class ReservaDetailResponse {
         this.sede = sede;
         this.fecha = fecha;
     }
-    
-    // Getters
+
     public int getId() {
         return id;
     }
@@ -67,8 +64,7 @@ public class ReservaDetailResponse {
     public String getFecha() {
         return fecha;
     }
-    
-    // Setters
+
     public void setId(int id) {
         this.id = id;
     }

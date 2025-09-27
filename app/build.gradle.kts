@@ -74,6 +74,8 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
     implementation(libs.recyclerview)
     kapt(libs.hilt.compiler)
     
@@ -92,7 +94,12 @@ dependencies {
 
     // Biometric
     implementation(libs.biometric)
-    
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
