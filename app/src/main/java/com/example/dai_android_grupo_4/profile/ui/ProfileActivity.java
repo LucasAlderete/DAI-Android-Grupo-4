@@ -1,11 +1,14 @@
 package com.example.dai_android_grupo_4.profile.ui;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -19,9 +22,16 @@ import com.example.dai_android_grupo_4.data.api.model.UsuarioUpdateRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,17 +39,17 @@ import retrofit2.Response;
 @AndroidEntryPoint
 public class ProfileActivity extends AppCompatActivity {
 
-    @Inject
-    ApiService apiService;
-
-    @Inject
-    TokenRepository tokenRepository;
+    @Inject ApiService apiService;
+    @Inject TokenRepository tokenRepository;
 
     private ImageView imgProfile;
     private TextInputEditText edtNombre, edtEmail;
     private MaterialButton btnActualizar, btnLogout;
 
     private String token;
+    private static final int PICK_IMAGE_REQUEST = 100;
+    private Uri imageUri;
+    private static final String BASE_URL = "http://10.0.2.2:8080"; // Ajustar según tu backend
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         cargarPerfil();
 
+        // Al tocar la imagen abrir galería
+        imgProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("image/*");
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        });
+
         btnActualizar.setOnClickListener(v -> actualizarPerfil());
 
         btnLogout.setOnClickListener(v -> {
@@ -76,7 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -94,15 +111,10 @@ public class ProfileActivity extends AppCompatActivity {
                     edtEmail.setText(usuario.getEmail());
 
                     String fotoUrl = usuario.getFotoUrl();
-                    if (fotoUrl != null && !fotoUrl.isEmpty()) {
-                        Glide.with(ProfileActivity.this)
-                                .load(fotoUrl)
-                                .placeholder(R.drawable.ic_default_avatar)
-                                .into(imgProfile);
-                    } else {
-                        imgProfile.setImageResource(R.drawable.ic_default_avatar);
-                    }
-
+                    Glide.with(ProfileActivity.this)
+                            .load(fotoUrl != null && !fotoUrl.isEmpty() ? BASE_URL + fotoUrl : R.drawable.ic_default_avatar)
+                            .placeholder(R.drawable.ic_default_avatar)
+                            .into(imgProfile);
                 } else {
                     Toast.makeText(ProfileActivity.this, "Error al cargar perfil", Toast.LENGTH_SHORT).show();
                 }
@@ -138,5 +150,62 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            imageUri = data.getData();
+            if (imageUri != null) {
+                subirImagen(imageUri);
+            }
+        }
+    }
+
+    private void subirImagen(Uri uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            String fileName = UUID.randomUUID() + ".jpg"; // o sacar extensión real si querés
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), inputStream.readAllBytes());
+            MultipartBody.Part body = MultipartBody.Part.createFormData("imagen", fileName, requestFile);
+
+            apiService.updateImagenPerfil(token, body).enqueue(new Callback<UsuarioResponse>() {
+                @Override
+                public void onResponse(Call<UsuarioResponse> call, Response<UsuarioResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String fotoUrl = response.body().getFotoUrl();
+                        Glide.with(ProfileActivity.this)
+                                .load(fotoUrl != null && !fotoUrl.isEmpty() ? BASE_URL + fotoUrl : R.drawable.ic_default_avatar)
+                                .placeholder(R.drawable.ic_default_avatar)
+                                .into(imgProfile);
+                        Toast.makeText(ProfileActivity.this, "Imagen actualizada", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ProfileActivity.this, "Error al subir imagen", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UsuarioResponse> call, Throwable t) {
+                    Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error al leer la imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getRealPathFromUri(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(columnIndex);
+            cursor.close();
+            return path;
+        }
+        return null;
     }
 }

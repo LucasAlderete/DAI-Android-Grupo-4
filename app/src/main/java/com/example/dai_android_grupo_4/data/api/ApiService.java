@@ -4,13 +4,16 @@ import com.example.dai_android_grupo_4.data.api.model.*;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -73,5 +76,12 @@ public interface ApiService {
     @PUT("usuario/perfil")
     Call<UsuarioResponse> updatePerfil(@Header("Authorization") String token,
                                        @Body UsuarioUpdateRequest usuarioRequest);
+
+    @Multipart
+    @PUT("usuario/perfil/imagen")
+    Call<UsuarioResponse> updateImagenPerfil(
+            @Header("Authorization") String token,
+            @Part MultipartBody.Part imagen
+    );
 
 }

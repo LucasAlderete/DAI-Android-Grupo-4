@@ -69,6 +69,27 @@ public class ProfileRepositoryImpl implements ProfileRepository {
                 });
     }
 
+    @Override
+    public void updateImagenPerfil(String token, MultipartBody.Part imagen, ProfileCallback callback) {
+        apiService.updateImagenPerfil("Bearer " + token, imagen)
+                .enqueue(new Callback<UsuarioResponse>() {
+                    @Override
+                    public void onResponse(Call<UsuarioResponse> call, Response<UsuarioResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            callback.onSuccess(mapUsuarioResponse(response.body()));
+                        } else {
+                            callback.onError("Error al actualizar la imagen");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UsuarioResponse> call, Throwable t) {
+                        callback.onError(t.getMessage());
+                    }
+                });
+    }
+
+
     private Usuario mapUsuarioResponse(UsuarioResponse r) {
         return new Usuario(r.getId(), r.getNombre(), r.getEmail(), r.getFotoUrl());
     }

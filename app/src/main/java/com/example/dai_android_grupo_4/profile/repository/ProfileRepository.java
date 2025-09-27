@@ -15,4 +15,7 @@ public interface ProfileRepository {
 
     void updatePerfil(String token, Usuario usuario, ProfileCallback callback);
 
+    void updateImagenPerfil(String token, MultipartBody.Part imagen, ProfileCallback callback);
+
+
 }
