@@ -3,17 +3,15 @@ package com.example.dai_android_grupo_4.booking.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.dai_android_grupo_4.R;
-import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingHistoryFragment;
+import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
+import com.example.dai_android_grupo_4.lessons.ui.LessonActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -27,7 +25,7 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         setContentView(R.layout.activity_booking);
 
         setupBottomNavigation();
-        
+
         // Cargar el fragment inicial basado en el parámetro recibido
         if (savedInstanceState == null) {
             String selectedTab = getIntent().getStringExtra("selected_tab");
@@ -49,13 +47,10 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment selectedFragment = null;
-        
+
         int itemId = item.getItemId();
         if (itemId == R.id.nav_home) {
-            // Navegar a MainActivity
-            Intent intent = new Intent(BookingActivity.this, com.example.dai_android_grupo_4.MainActivity.class);
-            startActivity(intent);
-            finish(); // Cerrar BookingActivity para evitar acumulación en el stack
+            startActivity(new Intent(this, LessonActivity.class));
             return true;
         } else if (itemId == R.id.nav_my_bookings) {
             selectedFragment = new BookingListFragment();
@@ -65,12 +60,12 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
             // TODO: Implementar navegación a Mi Perfil más tarde
             return true;
         }
-        
+
         if (selectedFragment != null) {
             loadFragment(selectedFragment);
             return true;
         }
-        
+
         return false;
     }
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DAI-Android-Grupo-4</string>
+    <string name="back_button_description">Botón para volver a la pantalla anterior</string>
 </resources>

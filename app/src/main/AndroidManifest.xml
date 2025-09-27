@@ -28,13 +28,20 @@
             android:name=".historial.ui.HistorialActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".lessons.ui.LessonActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".lessons.ui.LessonDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false">
         </activity>
     </application>
 
