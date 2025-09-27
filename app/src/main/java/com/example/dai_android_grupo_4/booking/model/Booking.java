@@ -11,6 +11,7 @@ import java.util.Date;
 public class Booking implements Serializable, Parcelable {
     
     private String id;
+    private Long claseId; // ID de la clase en la API
     private String className;
     private String instructor;
     private String date;
@@ -40,6 +41,9 @@ public class Booking implements Serializable, Parcelable {
     // Getters y Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public Long getClaseId() { return claseId; }
+    public void setClaseId(Long claseId) { this.claseId = claseId; }
 
     public String getClassName() { return className; }
     public void setClassName(String className) { this.className = className; }
@@ -101,6 +105,8 @@ public class Booking implements Serializable, Parcelable {
     // Parcelable implementation
     protected Booking(Parcel in) {
         id = in.readString();
+        long claseIdValue = in.readLong();
+        claseId = claseIdValue != 0 ? claseIdValue : null;
         className = in.readString();
         instructor = in.readString();
         date = in.readString();
@@ -133,6 +139,7 @@ public class Booking implements Serializable, Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(id);
+        dest.writeLong(claseId != null ? claseId : 0L);
         dest.writeString(className);
         dest.writeString(instructor);
         dest.writeString(date);

@@ -18,20 +18,36 @@ import androidx.fragment.app.Fragment;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.model.Booking;
+import com.example.dai_android_grupo_4.booking.repository.ClaseRepository;
 import com.example.dai_android_grupo_4.booking.ui.viewmodel.BookingViewModel;
+import com.example.dai_android_grupo_4.data.api.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CreateBookingFragment extends Fragment {
 
+    @Inject
+    ClaseRepository claseRepository;
+
     private AutoCompleteTextView spinnerClass, spinnerInstructor, spinnerDate, spinnerTime;
     private TextView tvSelectedClass, tvSelectedInstructor, tvSelectedDate, tvSelectedTime;
     private MaterialButton btnCreateBooking;
     private BookingViewModel viewModel;
+    
+    // Listas de datos de la API
+    private List<ClaseDto> clasesDisponibles = new ArrayList<>();
+    private List<SedeDto> sedes = new ArrayList<>();
+    private List<InstructorDto> instructores = new ArrayList<>();
+    private List<DisciplinaDto> disciplinas = new ArrayList<>();
+    
+    // Selecciones actuales
+    private ClaseDto claseSeleccionada;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -45,7 +61,7 @@ public class CreateBookingFragment extends Fragment {
         
         initViews(view);
         initViewModel();
-        setupSpinners();
+        loadDataFromAPI();
         setupClickListeners();
     }
 
@@ -69,83 +85,73 @@ public class CreateBookingFragment extends Fragment {
         }
     }
 
-    private void setupSpinners() {
-        // Configurar AutoCompleteTextView de clases
-        List<String> classes = new ArrayList<>();
-        classes.add("Yoga Matutino");
-        classes.add("Pilates Avanzado");
-        classes.add("Spinning");
-        classes.add("CrossFit");
-        classes.add("Zumba");
+    private void loadDataFromAPI() {
+        // Cargar clases disponibles
+        claseRepository.getClases(null, null, null, null, 0, 50, new ClaseRepository.ClaseCallback() {
+            @Override
+            public void onSuccess(List<ClaseDto> clases) {
+                clasesDisponibles = clases;
+                setupSpinnersWithAPIData();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Error al cargar clases: " + error, Toast.LENGTH_SHORT).show();
+                setupSpinnersWithMockData(); // Fallback a datos mock
+            }
+        });
+    }
+
+    private void setupSpinnersWithMockData() {
+        // Si falla la carga de datos de la API, mostrar mensaje de error
+        Toast.makeText(getContext(), "No se pudieron cargar las clases. Verifica tu conexión a internet.", Toast.LENGTH_LONG).show();
+    }
+
+    private void setupSpinnersWithAPIData() {
+        // Configurar AutoCompleteTextView de clases con datos reales
+        List<String> nombresClases = new ArrayList<>();
+        for (ClaseDto clase : clasesDisponibles) {
+            nombresClases.add(clase.getNombre());
+        }
         
         ArrayAdapter<String> classAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_dropdown_item_1line, classes);
+                android.R.layout.simple_dropdown_item_1line, nombresClases);
         spinnerClass.setAdapter(classAdapter);
-        spinnerClass.setText(classes.get(0), false); // Establecer valor por defecto
-        tvSelectedClass.setText(classes.get(0));
-
-        // Configurar AutoCompleteTextView de instructores
-        List<String> instructors = new ArrayList<>();
-        instructors.add("María González");
-        instructors.add("Carlos Ruiz");
-        instructors.add("Ana Martínez");
-        instructors.add("Roberto Silva");
-        instructors.add("Laura Fernández");
         
-        ArrayAdapter<String> instructorAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_dropdown_item_1line, instructors);
-        spinnerInstructor.setAdapter(instructorAdapter);
-        spinnerInstructor.setText(instructors.get(0), false); // Establecer valor por defecto
-        tvSelectedInstructor.setText(instructors.get(0));
+        if (!nombresClases.isEmpty()) {
+            spinnerClass.setText(nombresClases.get(0), false);
+            tvSelectedClass.setText(nombresClases.get(0));
+            claseSeleccionada = clasesDisponibles.get(0);
+        }
 
-        // Configurar AutoCompleteTextView de fechas
-        List<String> dates = new ArrayList<>();
-        dates.add("15 de Marzo, 2024");
-        dates.add("16 de Marzo, 2024");
-        dates.add("17 de Marzo, 2024");
-        dates.add("18 de Marzo, 2024");
-        dates.add("19 de Marzo, 2024");
-        
-        ArrayAdapter<String> dateAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_dropdown_item_1line, dates);
-        spinnerDate.setAdapter(dateAdapter);
-        spinnerDate.setText(dates.get(0), false); // Establecer valor por defecto
-        tvSelectedDate.setText(dates.get(0));
-
-        // Configurar AutoCompleteTextView de horarios
-        List<String> times = new ArrayList<>();
-        times.add("07:00 - 08:00");
-        times.add("09:00 - 10:00");
-        times.add("18:00 - 19:00");
-        times.add("19:00 - 20:00");
-        times.add("20:00 - 21:00");
-        
-        ArrayAdapter<String> timeAdapter = new ArrayAdapter<>(getContext(), 
-                android.R.layout.simple_dropdown_item_1line, times);
-        spinnerTime.setAdapter(timeAdapter);
-        spinnerTime.setText(times.get(1), false); // Establecer valor por defecto
-        tvSelectedTime.setText(times.get(1));
-
-        // Configurar listeners para actualizar los TextViews
+        // Configurar listeners
         spinnerClass.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedClass = classes.get(position);
-            tvSelectedClass.setText(selectedClass);
+            claseSeleccionada = clasesDisponibles.get(position);
+            tvSelectedClass.setText(claseSeleccionada.getNombre());
+            updateClassDetails();
         });
+    }
 
-        spinnerInstructor.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedInstructor = instructors.get(position);
-            tvSelectedInstructor.setText(selectedInstructor);
-        });
-
-        spinnerDate.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedDate = dates.get(position);
-            tvSelectedDate.setText(selectedDate);
-        });
-
-        spinnerTime.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedTime = times.get(position);
-            tvSelectedTime.setText(selectedTime);
-        });
+    private void updateClassDetails() {
+        if (claseSeleccionada != null) {
+            // Actualizar detalles de la clase seleccionada
+            if (claseSeleccionada.getInstructor() != null) {
+                tvSelectedInstructor.setText(claseSeleccionada.getInstructor().getNombreCompleto());
+            }
+            
+            if (claseSeleccionada.getSede() != null) {
+                // Aquí podrías mostrar la sede si tienes un campo para ello
+            }
+            
+            // Formatear fecha y hora
+            if (claseSeleccionada.getFechaInicio() != null) {
+                java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+                java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+                
+                tvSelectedDate.setText(dateFormat.format(claseSeleccionada.getFechaInicio()));
+                tvSelectedTime.setText(timeFormat.format(claseSeleccionada.getFechaInicio()));
+            }
+        }
     }
 
     private void setupClickListeners() {
@@ -155,27 +161,42 @@ public class CreateBookingFragment extends Fragment {
     }
 
     private void createBooking() {
-        // Validar que todos los campos estén seleccionados
-        if (spinnerClass.getText().toString().isEmpty() ||
-            spinnerInstructor.getText().toString().isEmpty() ||
-            spinnerDate.getText().toString().isEmpty() ||
-            spinnerTime.getText().toString().isEmpty()) {
-            Toast.makeText(getContext(), "Por favor selecciona todos los campos", Toast.LENGTH_SHORT).show();
+        // Validar que se haya seleccionado una clase
+        if (claseSeleccionada == null) {
+            Toast.makeText(getContext(), "Por favor selecciona una clase", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validar que la clase tenga cupo disponible
+        if (!claseSeleccionada.hasAvailableSpots()) {
+            Toast.makeText(getContext(), "Esta clase no tiene cupo disponible", Toast.LENGTH_SHORT).show();
             return;
         }
 
         try {
-            // Crear objeto Booking con los datos seleccionados
+            // Crear objeto Booking con los datos de la clase seleccionada
             Booking booking = new Booking();
-            booking.setClassName(spinnerClass.getText().toString());
-            booking.setInstructor(spinnerInstructor.getText().toString());
-            booking.setDate(spinnerDate.getText().toString());
-            booking.setTime(spinnerTime.getText().toString());
-            booking.setLocation("RitmoFit Centro"); // Por defecto
-            booking.setDuration("60 min");
-            booking.setCapacity(20);
-            booking.setCurrentBookings(0);
-            booking.setDescription("Reserva creada desde la app");
+            booking.setClaseId(claseSeleccionada.getId());
+            booking.setClassName(claseSeleccionada.getNombre());
+            booking.setDescription(claseSeleccionada.getDescripcion());
+            
+            if (claseSeleccionada.getInstructor() != null) {
+                booking.setInstructor(claseSeleccionada.getInstructor().getNombreCompleto());
+            }
+            
+            if (claseSeleccionada.getSede() != null) {
+                booking.setLocation(claseSeleccionada.getSede().getNombre());
+            }
+            
+            if (claseSeleccionada.getFechaInicio() != null) {
+                java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+                java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+                booking.setDate(dateFormat.format(claseSeleccionada.getFechaInicio()));
+                booking.setTime(timeFormat.format(claseSeleccionada.getFechaInicio()));
+            }
+            
+            booking.setCapacity(claseSeleccionada.getCupoMaximo() != null ? claseSeleccionada.getCupoMaximo() : 0);
+            booking.setCurrentBookings(claseSeleccionada.getCupoActual() != null ? claseSeleccionada.getCupoActual() : 0);
 
             // Usar el ViewModel para crear la reserva
             if (viewModel != null) {

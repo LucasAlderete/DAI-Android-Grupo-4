@@ -28,6 +28,9 @@
             android:name=".historial.ui.HistorialActivity"
             android:exported="false" />
         <activity
+            android:name=".profile.ui.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
