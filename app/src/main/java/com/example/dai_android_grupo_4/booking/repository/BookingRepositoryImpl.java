@@ -2,162 +2,244 @@ package com.example.dai_android_grupo_4.booking.repository;
 
 import com.example.dai_android_grupo_4.booking.api.BookingService;
 import com.example.dai_android_grupo_4.booking.model.Booking;
+import com.example.dai_android_grupo_4.data.api.ApiService;
+import com.example.dai_android_grupo_4.data.api.model.*;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import com.example.dai_android_grupo_4.booking.model.CreateBookingRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 public class BookingRepositoryImpl implements BookingRepository {
+
+    private final ApiService apiService;
+    private final Gson gson;
 
     private final BookingService bookingService;
 
     @Inject
-    public BookingRepositoryImpl(BookingService bookingService) {
+    public BookingRepositoryImpl(BookingService bookingService,ApiService apiService, Gson gson) {
         this.bookingService = bookingService;
+        this.apiService = apiService;
+        this.gson = gson;
     }
 
     @Override
     public void getUserBookings(BookingCallback callback) {
-        // Por ahora retornamos datos mock, después se integrará con el servicio real
-        List<Booking> mockBookings = createMockBookings();
-        callback.onSuccess(mockBookings);
-    }
-
-    @Override
-    public void getFilteredBookings(String status, String date, BookingCallback callback) {
-        List<Booking> allBookings = createMockBookings();
-        List<Booking> filteredBookings = new ArrayList<>();
-
-        for (Booking booking : allBookings) {
-            boolean matchesStatus = status == null || status.isEmpty() || status.equals(booking.getStatus());
-            boolean matchesDate = date == null || date.isEmpty() || date.equals(booking.getDate());
-
-            if (matchesStatus && matchesDate) {
-                filteredBookings.add(booking);
-            }
-        }
-
-        callback.onSuccess(filteredBookings);
-    }
-
-    @Override
-    public void cancelBooking(String bookingId, BookingCallback callback) {
-        // Simular cancelación
-        List<Booking> updatedBookings = createMockBookings();
-        for (Booking booking : updatedBookings) {
-            if (booking.getId().equals(bookingId)) {
-                booking.setStatus("CANCELED");
-                break;
-            }
-        }
-        callback.onSuccess(updatedBookings);
-    }
-
-    @Override
-    public void createBooking(Booking booking, BookingCallback callback) {
-        // Este servicio no es necesario para la funcionalidad
-    }
-
-    @Override
-    public void createBooking(long claseId, String token, SingleBookingCallback callback) {
-        CreateBookingRequest request = new CreateBookingRequest(claseId);
-        bookingService.createBooking("Bearer " + token, request).enqueue(new Callback<Booking>() {
+        apiService.getMisReservas(0, 20).enqueue(new Callback<PageReservaDto>() {
             @Override
-            public void onResponse(Call<Booking> call, Response<Booking> response) {
+            public void onResponse(Call<PageReservaDto> call, Response<PageReservaDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+                    List<Booking> bookings = convertToBookingList(response.body().getContent());
+                    callback.onSuccess(bookings);
                 } else {
-                    callback.onError("Error al crear la reserva");
+                    callback.onError("Error al obtener reservas: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<Booking> call, Throwable t) {
-                callback.onError(t.getMessage());
+            public void onFailure(Call<PageReservaDto> call, Throwable t) {
+                callback.onError("Error de conexión: " + t.getMessage());
             }
         });
     }
 
     @Override
-    public void getBookingById(String bookingId, BookingCallback callback) {
-        List<Booking> allBookings = createMockBookings();
-        for (Booking booking : allBookings) {
-            if (booking.getId().equals(bookingId)) {
-                List<Booking> singleBooking = new ArrayList<>();
-                singleBooking.add(booking);
-                callback.onSuccess(singleBooking);
-                return;
+    public void getFilteredBookings(String status, String date, BookingCallback callback) {
+        // Por ahora obtenemos todas las reservas y filtramos localmente
+        // En el futuro se podría implementar filtrado en el servidor
+        getUserBookings(new BookingCallback() {
+            @Override
+            public void onSuccess(List<Booking> bookings) {
+                List<Booking> filteredBookings = new ArrayList<>();
+
+                for (Booking booking : bookings) {
+                    boolean matchesStatus = status == null || status.isEmpty() || status.equals(booking.getStatus());
+                    boolean matchesDate = date == null || date.isEmpty() || date.equals(booking.getDate());
+
+                    if (matchesStatus && matchesDate) {
+                        filteredBookings.add(booking);
+                    }
+                }
+
+                callback.onSuccess(filteredBookings);
             }
-        }
-        callback.onError("Reserva no encontrada");
+
+            @Override
+            public void onError(String error) {
+                callback.onError(error);
+            }
+        });
     }
 
-    private List<Booking> createMockBookings() {
+    @Override
+    public void cancelBooking(String bookingId, BookingCallback callback) {
+        try {
+            Long id = Long.parseLong(bookingId);
+            apiService.cancelarReserva(id).enqueue(new Callback<ReservaDto>() {
+                @Override
+                public void onResponse(Call<ReservaDto> call, Response<ReservaDto> response) {
+                    if (response.isSuccessful()) {
+                        // Recargar la lista de reservas después de cancelar
+                        getUserBookings(callback);
+                    } else {
+                        String errorMessage = extractErrorMessage(response);
+                        callback.onError(errorMessage);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ReservaDto> call, Throwable t) {
+                    callback.onError("Error de conexión: " + t.getMessage());
+                }
+            });
+        } catch (NumberFormatException e) {
+            callback.onError("ID de reserva inválido");
+        }
+    }
+
+    @Override
+    public void createBooking(Booking booking, BookingCallback callback) {
+        // Extraer el claseId del booking
+        Long claseId = booking.getClaseId();
+
+        if (claseId == null) {
+            callback.onError("ID de clase no válido");
+            return;
+        }
+
+        CrearReservaDto crearReservaDto = new CrearReservaDto(claseId);
+
+        apiService.crearReserva(crearReservaDto).enqueue(new Callback<ReservaDto>() {
+            @Override
+            public void onResponse(Call<ReservaDto> call, Response<ReservaDto> response) {
+                if (response.isSuccessful()) {
+                    // Recargar la lista de reservas después de crear
+                    getUserBookings(callback);
+                } else {
+                    String errorMessage = extractErrorMessage(response);
+                    callback.onError(errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReservaDto> call, Throwable t) {
+                callback.onError("Error de conexión: " + t.getMessage());
+            }
+        });
+    }
+
+        @Override
+        public void createBooking(long claseId, String token, SingleBookingCallback callback) {
+            CreateBookingRequest request = new CreateBookingRequest(claseId);
+            bookingService.createBooking("Bearer " + token, request).enqueue(new Callback<Booking>() {
+                @Override
+                public void onResponse(Call<Booking> call, Response<Booking> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        callback.onSuccess(response.body());
+                    } else {
+                        callback.onError("Error al crear la reserva");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Booking> call, Throwable t) {
+                    callback.onError(t.getMessage());
+                }
+            });
+        }
+
+    @Override
+    public void getBookingById(String bookingId, BookingCallback callback) {
+        // Por ahora obtenemos todas las reservas y buscamos por ID
+        // En el futuro se podría implementar un endpoint específico
+        getUserBookings(new BookingCallback() {
+            @Override
+            public void onSuccess(List<Booking> bookings) {
+                for (Booking booking : bookings) {
+                    if (booking.getId().equals(bookingId)) {
+                        List<Booking> singleBooking = new ArrayList<>();
+                        singleBooking.add(booking);
+                        callback.onSuccess(singleBooking);
+                        return;
+                    }
+                }
+                callback.onError("Reserva no encontrada");
+            }
+
+            @Override
+            public void onError(String error) {
+                callback.onError(error);
+            }
+        });
+    }
+
+    // Métodos auxiliares
+    private List<Booking> convertToBookingList(List<ReservaDto> reservas) {
         List<Booking> bookings = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
-        // Reserva 1 - Confirmada
-        Booking booking1 = new Booking();
-        booking1.setId("booking_1");
-        booking1.setClassName("Yoga Matutino");
-        booking1.setInstructor("María González");
-        booking1.setDate("15 de Marzo, 2024");
-        booking1.setTime("09:00 - 10:00");
-        booking1.setLocation("RitmoFit Centro");
-        booking1.setStatus("CONFIRMED");
-        booking1.setDuration("60 min");
-        booking1.setCapacity(20);
-        booking1.setCurrentBookings(15);
-        booking1.setDescription("Clase de yoga para principiantes");
-        bookings.add(booking1);
+        for (ReservaDto reserva : reservas) {
+            Booking booking = new Booking();
+            booking.setId(reserva.getId().toString());
+            booking.setClaseId(reserva.getClaseId());
+            booking.setStatus(reserva.getEstado());
+            booking.setCreatedAt(reserva.getFechaReserva());
 
-        // Reserva 2 - Confirmada
-        Booking booking2 = new Booking();
-        booking2.setId("booking_2");
-        booking2.setClassName("Pilates Avanzado");
-        booking2.setInstructor("Carlos Ruiz");
-        booking2.setDate("16 de Marzo, 2024");
-        booking2.setTime("18:00 - 19:00");
-        booking2.setLocation("RitmoFit Norte");
-        booking2.setStatus("CONFIRMED");
-        booking2.setDuration("60 min");
-        booking2.setCapacity(15);
-        booking2.setCurrentBookings(12);
-        booking2.setDescription("Clase de pilates para nivel avanzado");
-        bookings.add(booking2);
+            if (reserva.getClase() != null) {
+                ClaseDto clase = reserva.getClase();
+                booking.setClassName(clase.getNombre());
+                booking.setDescription(clase.getDescripcion());
+                booking.setCapacity(clase.getCupoMaximo() != null ? clase.getCupoMaximo() : 0);
+                booking.setCurrentBookings(clase.getCupoActual() != null ? clase.getCupoActual() : 0);
 
-        // Reserva 3 - Completada
-        Booking booking3 = new Booking();
-        booking3.setId("booking_3");
-        booking3.setClassName("Spinning");
-        booking3.setInstructor("Ana Martínez");
-        booking3.setDate("10 de Marzo, 2024");
-        booking3.setTime("19:00 - 20:00");
-        booking3.setLocation("RitmoFit Centro");
-        booking3.setStatus("COMPLETED");
-        booking3.setDuration("60 min");
-        booking3.setCapacity(25);
-        booking3.setCurrentBookings(25);
-        booking3.setDescription("Clase de spinning intensiva");
-        bookings.add(booking3);
+                if (clase.getFechaInicio() != null) {
+                    booking.setDate(dateFormat.format(clase.getFechaInicio()));
+                }
 
-        // Reserva 4 - Cancelada
-        Booking booking4 = new Booking();
-        booking4.setId("booking_4");
-        booking4.setClassName("CrossFit");
-        booking4.setInstructor("Roberto Silva");
-        booking4.setDate("12 de Marzo, 2024");
-        booking4.setTime("07:00 - 08:00");
-        booking4.setLocation("RitmoFit Sur");
-        booking4.setStatus("CANCELED");
-        booking4.setDuration("60 min");
-        booking4.setCapacity(12);
-        booking4.setCurrentBookings(8);
-        booking4.setDescription("Entrenamiento funcional intenso");
-        bookings.add(booking4);
+                if (clase.getInstructor() != null) {
+                    booking.setInstructor(clase.getInstructor().getNombreCompleto());
+                }
+
+                if (clase.getSede() != null) {
+                    booking.setLocation(clase.getSede().getNombre());
+                }
+            }
+
+            bookings.add(booking);
+        }
 
         return bookings;
+    }
+
+    /**
+     * Extrae el mensaje de error específico del cuerpo de la respuesta HTTP
+     */
+    private String extractErrorMessage(Response<?> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                ErrorResponse errorResponse = gson.fromJson(errorBody, ErrorResponse.class);
+                return errorResponse.getSpecificErrorMessage();
+            }
+        } catch (IOException | JsonSyntaxException e) {
+            // Si no se puede parsear el error, usar el código de estado
+        }
+
+        // Fallback al código de error si no se puede extraer el mensaje
+        return "Error al crear reserva: " + response.code();
     }
 }

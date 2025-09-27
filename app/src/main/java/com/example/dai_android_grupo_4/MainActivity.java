@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dai_android_grupo_4.profile.ui.ProfileActivity;
+import com.example.dai_android_grupo_4.lessons.ui.LessonActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -95,7 +96,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_home) {
-            // Ya estamos en Home, mantener seleccionado
+            // Navegar a la actividad de lessons
+            Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+            startActivity(intent);
             return true;
         } else if (itemId == R.id.nav_my_bookings) {
             // Navegar a la actividad de reservas

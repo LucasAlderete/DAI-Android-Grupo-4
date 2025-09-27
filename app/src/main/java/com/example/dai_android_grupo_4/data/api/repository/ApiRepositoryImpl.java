@@ -5,6 +5,8 @@ import com.example.dai_android_grupo_4.data.api.model.AuthResponse;
 import com.example.dai_android_grupo_4.data.api.model.LoginRequest;
 import com.example.dai_android_grupo_4.data.api.model.RegisterRequest;
 import com.example.dai_android_grupo_4.data.api.model.ReservaDetailResponse;
+import com.example.dai_android_grupo_4.data.api.model.PageReservaDto;
+import com.example.dai_android_grupo_4.data.api.model.ReservaDto;
 import com.example.dai_android_grupo_4.data.api.model.VerifyOtpRequest;
 import com.example.dai_android_grupo_4.data.api.model.OtpRequest;
 import com.example.dai_android_grupo_4.model.Reserva;
@@ -29,13 +31,21 @@ public class ApiRepositoryImpl implements ApiRepository {
 
     @Override
     public void getAllReservas(ReservaServiceCallback callback) {
-        apiService.getReservasList().enqueue(new Callback<List<ReservaDetailResponse>>() {
+        apiService.getMisReservas(0, 20).enqueue(new Callback<PageReservaDto>() {
             @Override
-            public void onResponse(Call<List<ReservaDetailResponse>> call, Response<List<ReservaDetailResponse>> response) {
+            public void onResponse(Call<PageReservaDto> call, Response<PageReservaDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Reserva> reservas = new ArrayList<>();
-                    for (ReservaDetailResponse reserva : response.body()) {
-                        reservas.add(new Reserva(reserva.getDisciplina(), reserva.getHorario(), reserva.getProfesor()));
+                    for (ReservaDto reserva : response.body().getContent()) {
+                        // Convertir ReservaDto a Reserva (modelo anterior)
+                        String disciplina = reserva.getClase() != null && reserva.getClase().getDisciplina() != null 
+                            ? reserva.getClase().getDisciplina().getNombre() : "";
+                        String horario = reserva.getClase() != null && reserva.getClase().getFechaInicio() != null 
+                            ? reserva.getClase().getFechaInicio().toString() : "";
+                        String profesor = reserva.getClase() != null && reserva.getClase().getInstructor() != null 
+                            ? reserva.getClase().getInstructor().getNombreCompleto() : "";
+                        
+                        reservas.add(new Reserva(disciplina, horario, profesor));
                     }
                     callback.onSuccess(reservas);
                 } else {
@@ -44,7 +54,7 @@ public class ApiRepositoryImpl implements ApiRepository {
             }
 
             @Override
-            public void onFailure(Call<List<ReservaDetailResponse>> call, Throwable t) {
+            public void onFailure(Call<PageReservaDto> call, Throwable t) {
                 callback.onError(t);
             }
         });

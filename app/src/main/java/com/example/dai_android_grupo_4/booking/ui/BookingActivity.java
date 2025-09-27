@@ -11,6 +11,7 @@ import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingHistoryFragment;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
 import com.example.dai_android_grupo_4.lessons.ui.LessonActivity;
+import com.example.dai_android_grupo_4.profile.ui.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -57,7 +58,7 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         } else if (itemId == R.id.nav_booking_history) {
             selectedFragment = new BookingHistoryFragment();
         } else if (itemId == R.id.nav_profile) {
-            // TODO: Implementar navegación a Mi Perfil más tarde
+            startActivity(new Intent(this, ProfileActivity.class));
             return true;
         }
 

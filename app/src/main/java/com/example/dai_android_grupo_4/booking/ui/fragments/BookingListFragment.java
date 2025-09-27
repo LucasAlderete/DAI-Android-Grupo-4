@@ -75,7 +75,8 @@ public class BookingListFragment extends Fragment implements BookingAdapter.OnBo
     }
 
     private void setupViewModel() {
-        viewModel = new ViewModelProvider(this).get(BookingViewModel.class);
+        // Usar el ViewModel de la Activity para compartir el estado entre fragmentos
+        viewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
     }
 
     private void observeData() {
@@ -93,6 +94,14 @@ public class BookingListFragment extends Fragment implements BookingAdapter.OnBo
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
                 Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Observar cuando se crea una reserva exitosamente para refrescar la lista
+        viewModel.getBookingCreated().observe(getViewLifecycleOwner(), bookingCreated -> {
+            if (bookingCreated != null && bookingCreated) {
+                // La lista ya se actualiza automáticamente por el observer de getBookings()
+                // cuando el ViewModel recarga los datos después de crear la reserva
             }
         });
     }
