@@ -166,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void subirImagen(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            String fileName = UUID.randomUUID() + ".jpg"; // o sacar extensión real si querés
+            String fileName = UUID.randomUUID() + ".jpg";
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), inputStream.readAllBytes());
             MultipartBody.Part body = MultipartBody.Part.createFormData("imagen", fileName, requestFile);
 
