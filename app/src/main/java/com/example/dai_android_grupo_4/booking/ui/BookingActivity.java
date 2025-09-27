@@ -1,5 +1,6 @@
 package com.example.dai_android_grupo_4.booking.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -51,7 +52,10 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         
         int itemId = item.getItemId();
         if (itemId == R.id.nav_home) {
-            // TODO: Implementar navegación a Home más tarde
+            // Navegar a MainActivity
+            Intent intent = new Intent(BookingActivity.this, com.example.dai_android_grupo_4.MainActivity.class);
+            startActivity(intent);
+            finish(); // Cerrar BookingActivity para evitar acumulación en el stack
             return true;
         } else if (itemId == R.id.nav_my_bookings) {
             selectedFragment = new BookingListFragment();

@@ -38,6 +38,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "⭐ onResume: La Activity es visible y tiene el foco");
+        
+        // Sincronizar la navbar para asegurar que "Home" esté seleccionado
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     @Override
