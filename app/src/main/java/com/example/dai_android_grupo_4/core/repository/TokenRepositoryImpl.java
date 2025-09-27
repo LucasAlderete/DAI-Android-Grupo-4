@@ -7,10 +7,14 @@ import android.util.Log;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
+import com.example.dai_android_grupo_4.data.api.AuthApiService;
+import com.example.dai_android_grupo_4.data.api.model.TokenValidationResponse;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import retrofit2.Call;
 
 @Singleton
 public class TokenRepositoryImpl implements TokenRepository {
@@ -20,10 +24,12 @@ public class TokenRepositoryImpl implements TokenRepository {
     private static final String KEY_TOKEN = "auth_token";
     
     private final SharedPreferences encryptedSharedPreferences;
-    
+    private final AuthApiService authApiService;
+
     @Inject
-    public TokenRepositoryImpl(Context context) {
+    public TokenRepositoryImpl(Context context, AuthApiService authApiService) {
         this.encryptedSharedPreferences = createEncryptedSharedPreferences(context);
+        this.authApiService = authApiService;
     }
     
     private SharedPreferences createEncryptedSharedPreferences(Context context) {
@@ -63,5 +69,14 @@ public class TokenRepositoryImpl implements TokenRepository {
     @Override
     public boolean hasToken() {
         return encryptedSharedPreferences.contains(KEY_TOKEN);
+    }
+
+    @Override
+    public Call<TokenValidationResponse> validateToken() {
+        String token = getToken();
+        if (token == null) {
+            return null;
+        }
+        return authApiService.validateToken("Bearer " + token);
     }
 }

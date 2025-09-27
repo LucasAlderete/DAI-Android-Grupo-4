@@ -32,6 +32,9 @@
             android:exported="false" />
         <activity
             android:name=".lessons.ui.LessonActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.ui.AuthActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

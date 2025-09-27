@@ -4,6 +4,7 @@ import android.content.Context;
 import com.example.dai_android_grupo_4.booking.api.BookingService;
 import com.example.dai_android_grupo_4.core.interceptor.AuthInterceptor;
 import com.example.dai_android_grupo_4.data.api.ApiService;
+import com.example.dai_android_grupo_4.data.api.AuthApiService;
 import com.example.dai_android_grupo_4.lessons.api.LessonService;
 import dagger.Module;
 import dagger.Provides;
@@ -11,6 +12,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import javax.inject.Singleton;
+import javax.inject.Named;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -145,5 +147,37 @@ public class NetworkModule {
     @Singleton
     LessonService provideLessonService(Retrofit retrofit) {
         return retrofit.create(LessonService.class);
+    }
+
+    // OkHttpClient SIN AuthInterceptor para AuthApiService (evita ciclo de dependencia)
+    @Provides
+    @Singleton
+    @Named("auth")
+    OkHttpClient provideAuthOkHttpClient(Cache cache) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        return new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .cache(cache)
+                .build();
+    }
+
+    // Retrofit específico para AuthApiService
+    @Provides
+    @Singleton
+    @Named("auth")
+    Retrofit provideAuthRetrofit(@Named("auth") OkHttpClient client, Gson gson) {
+        return new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    AuthApiService provideAuthApiService(@Named("auth") Retrofit retrofit) {
+        return retrofit.create(AuthApiService.class);
     }
 }

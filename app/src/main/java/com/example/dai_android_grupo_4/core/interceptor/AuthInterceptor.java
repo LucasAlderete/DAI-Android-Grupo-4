@@ -25,11 +25,7 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        // TODO: TEMPORAL - Reemplazar con token real cuando esté implementado
-        String hardcodedToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWNhc20uYWxkZXJldGVAZ21haWwuY29tIiwiaWF0IjoxNzU4OTQ3MjMxLCJleHAiOjE3NTkwMzM2MzF9.XSDjYTlpCWtlOCzlHQhGN8p87LnwJ_Wj9Uymf7tLoYQ"; // ← PEGA TU TOKEN AQUÍ
-        tokenRepository.saveToken(hardcodedToken);
-
-        // Obtener el token (comentado temporalmente)
+        // Obtener el token
         String token = tokenRepository.getToken();
 
         // Si no hay token, enviar request sin modificar
