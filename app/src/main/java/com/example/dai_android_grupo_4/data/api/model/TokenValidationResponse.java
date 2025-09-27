@@ -4,23 +4,43 @@ import com.google.gson.annotations.SerializedName;
 
 public class TokenValidationResponse {
 
-    @SerializedName("valid")
-    private boolean valid;
+    @SerializedName("token")
+    private String token;
+
+    @SerializedName("mensaje")
+    private String mensaje;
 
     @SerializedName("email")
     private String email;
 
-    @SerializedName("error")
-    private String error;
+    @SerializedName("nombre")
+    private String nombre;
+
+    @SerializedName("password")
+    private String password;
+
+    @SerializedName("fotoUrl")
+    private String fotoUrl;
+
+    @SerializedName("nuevoUsuario")
+    private boolean nuevoUsuario;
 
     public TokenValidationResponse() {}
 
-    public boolean isValid() {
-        return valid;
+    public String getToken() {
+        return token;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
 
     public String getEmail() {
@@ -31,11 +51,42 @@ public class TokenValidationResponse {
         this.email = email;
     }
 
-    public String getError() {
-        return error;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
+
+    public boolean isNuevoUsuario() {
+        return nuevoUsuario;
+    }
+
+    public void setNuevoUsuario(boolean nuevoUsuario) {
+        this.nuevoUsuario = nuevoUsuario;
+    }
+
+    /**
+     * Devuelve true si el token es válido según el mensaje del backend.
+     */
+    public boolean isValid() {
+        return "Token válido".equalsIgnoreCase(mensaje);
     }
 }

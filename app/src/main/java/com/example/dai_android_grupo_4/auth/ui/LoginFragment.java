@@ -22,6 +22,7 @@ import com.example.dai_android_grupo_4.data.api.model.LoginRequest;
 import com.example.dai_android_grupo_4.data.api.model.AuthResponse;
 import com.example.dai_android_grupo_4.data.api.repository.ApiRepositoryImpl;
 import com.example.dai_android_grupo_4.data.api.repository.AuthCallback;
+import com.example.dai_android_grupo_4.MainActivity;
 
 import javax.inject.Inject;
 
@@ -51,13 +52,6 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (tokenRepository.getToken() != null) {
-            Intent intent = new Intent(getActivity(), com.example.dai_android_grupo_4.ReservasActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
-            return;
-        }
-
         userEditText = view.findViewById(R.id.userEditText);
         passwordEditText = view.findViewById(R.id.passwordEditText);
         loginButton = view.findViewById(R.id.loginButton);
@@ -81,7 +75,7 @@ public class LoginFragment extends Fragment {
                     tokenRepository.saveToken(response.getToken());
                     Toast.makeText(getContext(), "Login exitoso", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(getActivity(), com.example.dai_android_grupo_4.MainActivity.class);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                     requireActivity().finish();
                 }

@@ -17,9 +17,13 @@ import dagger.hilt.components.SingletonComponent;
 @Module
 @InstallIn(SingletonComponent.class)
 public class TokenModule {
+
     @Provides
     @Singleton
-    public TokenRepository provideTokenRepository(@ApplicationContext Context context, AuthApiService authApiService) {
+    public TokenRepository provideTokenRepository(
+            @ApplicationContext Context context,
+            AuthApiService authApiService  // <--- usar AuthApiService, no ApiService
+    ) {
         return new TokenRepositoryImpl(context, authApiService);
     }
 }

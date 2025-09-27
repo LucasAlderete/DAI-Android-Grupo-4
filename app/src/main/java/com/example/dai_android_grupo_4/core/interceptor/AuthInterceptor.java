@@ -5,6 +5,7 @@ import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import okhttp3.Interceptor;
@@ -14,21 +15,20 @@ import okhttp3.Response;
 @Singleton
 public class AuthInterceptor implements Interceptor {
 
-    private final TokenRepository tokenRepository;
+    private final Provider<TokenRepository> tokenRepositoryProvider;
 
     @Inject
-    public AuthInterceptor(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public AuthInterceptor(Provider<TokenRepository> tokenRepositoryProvider) {
+        this.tokenRepositoryProvider = tokenRepositoryProvider;
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        // Obtener el token
-        String token = tokenRepository.getToken();
+        // Obtener el token en tiempo de ejecución
+        String token = tokenRepositoryProvider.get().getToken();
 
-        // Si no hay token, enviar request sin modificar
         if (token == null || token.isEmpty()) {
             return chain.proceed(originalRequest);
         }

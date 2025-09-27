@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.MainActivity;
+import com.example.dai_android_grupo_4.core.repository.TokenRepository;
 import com.example.dai_android_grupo_4.data.api.model.AuthResponse;
 import com.example.dai_android_grupo_4.data.api.model.VerifyOtpRequest;
 import com.example.dai_android_grupo_4.data.api.model.OtpRequest;
@@ -32,6 +33,9 @@ public class VerifyCodeFragment extends Fragment {
 
     @Inject
     ApiRepositoryImpl apiRepository;
+
+    @Inject
+    TokenRepository tokenRepository;
 
     private TextInputEditText codeEditText;
     private MaterialButton verifyButton;
@@ -69,6 +73,7 @@ public class VerifyCodeFragment extends Fragment {
             apiRepository.verifyOtp(request, new AuthCallback() {
                 @Override
                 public void onSuccess(AuthResponse response) {
+                    tokenRepository.saveToken(response.getToken());
                     Toast.makeText(getContext(), "Código verificado correctamente", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(getActivity(), MainActivity.class);
