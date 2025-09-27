@@ -63,6 +63,9 @@ public interface ApiService {
     @POST("auth/reenviar-codigo")  // POST /api/auth/reenviar-codigo
     Call<AuthResponse> resendOtp(@Body OtpRequest otpRequest);
 
+    @GET("auth/validate")  // GET /api/auth/validate
+    Call<TokenValidationResponse> validateToken(@Header("Authorization") String token);
+
     // ================= USUARIO =================
     @GET("usuario/perfil")
     Call<UsuarioResponse> getPerfil(@Header("Authorization") String token);
