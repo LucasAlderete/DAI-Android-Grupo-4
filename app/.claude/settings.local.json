@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/54116/StudioProjects/DAI-Android-Grupo-4/gradle/**)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

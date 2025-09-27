@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tv_clase_nombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la Clase"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_fecha_asistencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fecha: 2025-01-01"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/darker_gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tv_duracion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Duración: 60 min"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/tv_calificacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⭐ 5/5"
+            android:textSize="12sp"
+            android:textColor="@android:color/holo_orange_dark" />
+
+    </LinearLayout>
+
+</LinearLayout>

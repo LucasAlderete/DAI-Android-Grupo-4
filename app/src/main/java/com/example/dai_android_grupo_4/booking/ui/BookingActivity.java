@@ -1,5 +1,6 @@
 package com.example.dai_android_grupo_4.booking.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -10,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.booking.ui.fragments.BookingListFragment;
-import com.example.dai_android_grupo_4.booking.ui.fragments.CreateBookingFragment;
+import com.example.dai_android_grupo_4.booking.ui.fragments.BookingHistoryFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -27,9 +28,16 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
 
         setupBottomNavigation();
         
-        // Cargar el fragment inicial
+        // Cargar el fragment inicial basado en el parámetro recibido
         if (savedInstanceState == null) {
-            loadFragment(new BookingListFragment());
+            String selectedTab = getIntent().getStringExtra("selected_tab");
+            if ("history".equals(selectedTab)) {
+                loadFragment(new BookingHistoryFragment());
+                bottomNavigationView.setSelectedItemId(R.id.nav_booking_history);
+            } else {
+                loadFragment(new BookingListFragment());
+                bottomNavigationView.setSelectedItemId(R.id.nav_my_bookings);
+            }
         }
     }
 
@@ -43,13 +51,19 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
         Fragment selectedFragment = null;
         
         int itemId = item.getItemId();
-        if (itemId == R.id.nav_my_bookings) {
+        if (itemId == R.id.nav_home) {
+            // Navegar a MainActivity
+            Intent intent = new Intent(BookingActivity.this, com.example.dai_android_grupo_4.MainActivity.class);
+            startActivity(intent);
+            finish(); // Cerrar BookingActivity para evitar acumulación en el stack
+            return true;
+        } else if (itemId == R.id.nav_my_bookings) {
             selectedFragment = new BookingListFragment();
-        } else if (itemId == R.id.nav_create_booking) {
-            selectedFragment = new CreateBookingFragment();
         } else if (itemId == R.id.nav_booking_history) {
-            // Aquí cargarías el fragment para historial
-            // selectedFragment = new BookingHistoryFragment();
+            selectedFragment = new BookingHistoryFragment();
+        } else if (itemId == R.id.nav_profile) {
+            // TODO: Implementar navegación a Mi Perfil más tarde
+            return true;
         }
         
         if (selectedFragment != null) {
@@ -63,16 +77,14 @@ public class BookingActivity extends AppCompatActivity implements BottomNavigati
     public void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
+        // No agregar al back stack para evitar problemas de navegación
+        // transaction.addToBackStack(null);
         transaction.commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
+        // Como no usamos back stack para fragments, simplemente cerrar la activity
+        super.onBackPressed();
     }
 }
