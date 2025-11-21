@@ -12,6 +12,7 @@ public class Lesson {
     private int cupoMaximo;
     private int cupoActual;
     private boolean disponible;
+    private int relevanceScore = 0; // Para ordenamiento por preferencias
 
     public Long getId() {
         return id;
@@ -99,5 +100,13 @@ public class Lesson {
 
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
+    }
+
+    public int getRelevanceScore() {
+        return relevanceScore;
+    }
+
+    public void setRelevanceScore(int relevanceScore) {
+        this.relevanceScore = relevanceScore;
     }
 }

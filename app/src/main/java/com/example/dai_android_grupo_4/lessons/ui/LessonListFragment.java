@@ -63,10 +63,17 @@ public class LessonListFragment extends Fragment {
         setupFilters();
         observeViewModel();
 
-        // Carga inicial de datos
-        viewModel.fetchLessons(null, null, null);
+        // Carga inicial de datos con ordenamiento por preferencias
+        viewModel.fetchLessonsOrdered(null, null, null);
         viewModel.fetchSites();
         viewModel.fetchDisciplines();
+    }
+    @Override
+    public void onResume () {
+        super.onResume();
+        // con esto cuando tocamos volver atras en profile, se vuelve a recargar
+        // si está en pausa el activity y se reactiva, hace recarga y no trae datos viejos
+        triggerFilter();
     }
 
     private void initViews(View view) {
@@ -188,7 +195,7 @@ public class LessonListFragment extends Fragment {
     private void triggerFilter() {
         Long siteId = (selectedSite != null) ? selectedSite.getId() : null;
         Long disciplineId = (selectedDiscipline != null) ? selectedDiscipline.getId() : null;
-        // Fetch all and filter in observer
-        viewModel.fetchLessons(siteId, disciplineId, null);
+        // Fetch con ordenamiento por preferencias
+        viewModel.fetchLessonsOrdered(siteId, disciplineId, null);
     }
 }

@@ -1,6 +1,9 @@
 package com.example.dai_android_grupo_4.data.api;
 
 import com.example.dai_android_grupo_4.data.api.model.*;
+import com.example.dai_android_grupo_4.preferences.model.DisciplinaFavorita;
+import com.example.dai_android_grupo_4.preferences.model.DisponibilidadHoraria;
+import com.example.dai_android_grupo_4.preferences.model.SedeFavorita;
 
 import java.util.List;
 
@@ -73,5 +76,37 @@ public interface ApiService {
     @PUT("usuario/perfil")
     Call<UsuarioResponse> updatePerfil(@Header("Authorization") String token,
                                        @Body UsuarioUpdateRequest usuarioRequest);
+
+    // ================= PREFERENCIAS =================
+
+    // Disciplinas Favoritas
+    @GET("disciplinas-favoritas")
+    Call<List<DisciplinaFavorita>> getDisciplinasFavoritas();
+
+    @POST("disciplinas-favoritas/{disciplinaId}")
+    Call<DisciplinaFavorita> addDisciplinaFavorita(@Path("disciplinaId") Long disciplinaId);
+
+    @DELETE("disciplinas-favoritas/{id}")
+    Call<Void> removeDisciplinaFavorita(@Path("id") Long id);
+
+    // Sedes Favoritas
+    @GET("sedes-favoritas")
+    Call<List<SedeFavorita>> getSedesFavoritas();
+
+    @POST("sedes-favoritas/{sedeId}")
+    Call<SedeFavorita> addSedeFavorita(@Path("sedeId") Long sedeId);
+
+    @DELETE("sedes-favoritas/{id}")
+    Call<Void> removeSedeFavorita(@Path("id") Long id);
+
+    // Disponibilidad Horaria
+    @GET("disponibilidad-horaria")
+    Call<List<DisponibilidadHoraria>> getDisponibilidades();
+
+    @POST("disponibilidad-horaria")
+    Call<DisponibilidadHoraria> addDisponibilidad(@Body DisponibilidadHoraria disponibilidad);
+
+    @DELETE("disponibilidad-horaria/{id}")
+    Call<Void> removeDisponibilidad(@Path("id") Long id);
 
 }

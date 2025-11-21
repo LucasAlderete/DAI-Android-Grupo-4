@@ -1,5 +1,6 @@
 package com.example.dai_android_grupo_4.profile.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.dai_android_grupo_4.MainActivity;
 import com.example.dai_android_grupo_4.R;
 import com.example.dai_android_grupo_4.data.api.ApiService;
 import com.example.dai_android_grupo_4.data.api.model.UsuarioResponse;
@@ -35,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView imgProfile;
     private TextInputEditText edtNombre, edtEmail;
     private MaterialButton btnActualizar;
-
+    private MaterialButton btnVolverHome;
     private String token;
 
     @Override
@@ -47,9 +49,15 @@ public class ProfileActivity extends AppCompatActivity {
         edtNombre = findViewById(R.id.edtNombre);
         edtEmail = findViewById(R.id.edtEmail);
         btnActualizar = findViewById(R.id.btnActualizar);
-
+        btnVolverHome = findViewById(R.id.btnVolverHome);
         token = "Bearer " + tokenRepository.getToken(); // obtenemos token guardado
 
+        btnVolverHome.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
         cargarPerfil();
 
         btnActualizar.setOnClickListener(v -> actualizarPerfil());

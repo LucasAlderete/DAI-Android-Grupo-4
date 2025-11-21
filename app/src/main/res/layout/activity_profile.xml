@@ -48,5 +48,27 @@
             android:layout_height="wrap_content"
             android:text="Actualizar"
             android:layout_marginTop="24dp"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Fragment de Preferencias -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/preferencesFragmentContainer"
+            android:name="com.example.dai_android_grupo_4.preferences.ui.PreferencesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVolverHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Volver a Home"
+        android:layout_marginTop="24dp"
+        style="@style/Widget.MaterialComponents.Button"/>
     </LinearLayout>
 </ScrollView>
